@@ -3,20 +3,52 @@
 
 #include <string>
 #include <vector>
+#include "NodeData.h"
 class Node{
     private:
-        std::vector<std::string>* connected_node_ids;
-        std::vector<Node*> connected_nodes;
-        std::string id;
+        // id the node will be refered to by
+        int id;
+
+        // text name used for searching + readability
+        std::string name;
+
+        // number of nodes that point to this node
+        int referenceCount;
+
+        // Nodes this node points to
+        std::vector<int> connectionIds;
+
+        // Data stored in this node + file management
+        NodeData* nodeData;
     public:
-        // Create Node with id
-        Node(std::string id);
-        // Create Node from file
-        Node(std::ifstream &input_file);
+        // Load node from file
+        Node(std::string& folder, int& id);
+        // Create Node with id and name
+        Node(std::string& folder, int& id, std::string& name);
 
         // ID of this node
-        std::string& get_id();
-        // Vector of nodes connected to this one
-        std::vector<Node*>& get_connected_nodes();
+        int& getId();
+
+        // Name of this node
+        std::string& getName();
+
+        // Get ids of the connected nodes
+        std::vector<int>& getConnectionIds();
+
+        // Increments the reference counter
+        void addReference();
+        // Get count of nodes pointing to this node
+        int& getReferenceCount();
+        // Decrements the reference counter, if reference counter becomes zero the node self-destructs
+        void removeReference();
+
+        // Adds connection to target node
+        void addConnection(int& targetId);
+        // Removes connection from this node to the target
+        void removeConnection(int& targetId);
+        
+
+        // Delete nodedata
+        ~Node();
 };
 #endif
