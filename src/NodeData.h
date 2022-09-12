@@ -18,6 +18,9 @@
 
 class NodeData{
     private:
+        // string to be appended after node id to get file name
+        std::string FILE_EXT = "_data.sgnd";
+
         // path to this nodes file
         std::string filepath;
 
@@ -25,11 +28,16 @@ class NodeData{
         std::unordered_map<std::string, std::string>* nodeContents;
 
         bool dataLoaded = false;
+
+        // Returns only the requested data group
+        std::string& readDataGroup(int group_id);
+        // Returns an array split into the three data groups
+        std::string* readDataGroups();
     public:
         // Load node from the provided folder with
-        NodeData(std::string folder, int id);
+        NodeData(std::string& folder, int* id);
         // Create node in folder with provided id and name
-        NodeData(std::string folder, int id, std::string name);
+        NodeData(std::string& folder, int* id, std::string& name);
 
         // Returns if the data is currently loaded
         bool& isLoaded();
@@ -44,6 +52,8 @@ class NodeData{
         std::string& getIdGroup();
         // Returns the Connections group
         std::string& getConnectionsGroup();
+        // Returns the Data group();
+        std::string& getDataGroup();
 
         // Returns the value of the key, null if key is not in map
         // if data is not loaded this method will cause data to be loaded

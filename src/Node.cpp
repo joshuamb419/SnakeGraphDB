@@ -5,7 +5,7 @@
 
 Node::Node(std::string& folder, int& id){
     this->id = id;
-    this->nodeData = new NodeData(folder, id);
+    this->nodeData = new NodeData(folder, &(this->id));
 
     // Pull the name from the file
     std::string idGroup = nodeData->getIdGroup();
@@ -31,7 +31,7 @@ Node::Node(std::string& folder, int& id, std::string& name){
     this->id = id;
     this->name = name;
     this->referenceCount = 0;
-    this->nodeData = new NodeData(folder, id, name);
+    this->nodeData = new NodeData(folder, &(this->id), name);
 }
 
 int& Node::getId(){

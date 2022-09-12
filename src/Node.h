@@ -6,10 +6,10 @@
 #include "NodeData.h"
 class Node{
     private:
-        // id the node will be refered to by
+        // ID the node will be refered to by
         int id;
 
-        // text name used for searching + readability
+        // Text name used for searching + readability
         std::string name;
 
         // number of nodes that point to this node
