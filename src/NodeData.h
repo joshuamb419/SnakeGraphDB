@@ -11,9 +11,9 @@
 * Usages of ':' represent usages of the ascii record seperator
 * Usages of ',' represent usages of the ascii unit seperator
 * 
-* Group 1 (identification)    <node_id>:<node_name>
-* Group 2 (connections)       <referenceCount>:<connectionIds>
-* Group 3 (data)              <key_1>,<value_1>:<key_2>,<value_2>:...:<key_e>,<value_e>
+* Group 0 (identification)    <node_id>:<node_name>
+* Group 1 (connections)       <referenceCount>:<connectionIds>
+* Group 2 (data)              <key_1>,<value_1>:<key_2>,<value_2>:...:<key_e>,<value_e>
 */
 
 class NodeData{
@@ -30,14 +30,20 @@ class NodeData{
         bool dataLoaded = false;
 
         // Returns only the requested data group
-        std::string& readDataGroup(int group_id);
+        std::string& readDataGroup(int& group_id);
         // Returns an array split into the three data groups
         std::string* readDataGroups();
+
+        // How many bytes to increment the buffer by when reading data
+        int SIZE_INC = 100;
     public:
+        // Enum for the data groups
+        enum GroupIds { identification = 0, connections = 1, data = 2 };
+
         // Load node from the provided folder with
-        NodeData(std::string& folder, int* id);
+        NodeData(std::string& folder, int& id);
         // Create node in folder with provided id and name
-        NodeData(std::string& folder, int* id, std::string& name);
+        NodeData(std::string& folder, int& id, std::string& name);
 
         // Returns if the data is currently loaded
         bool& isLoaded();

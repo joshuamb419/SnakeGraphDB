@@ -12,7 +12,7 @@ build: $(TARGET) $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $(EXE_FILE)
 
 test: $(TARGET) main.cpp
-	$(CC) $(CFLAGS) main.cpp -o $(EXE_FILE)
+	$(CC) $(CFLAGS) main.cpp -o test
 
 $(TARGET):
 	mkdir $(TARGET)
