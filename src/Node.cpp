@@ -5,23 +5,23 @@
 
 Node::Node(std::string& folder, int& id){
     this->id = id;
-    this->nodeData = new NodeData(folder, id);
+    this->node_data = new NodeData(folder, id);
 
     // Pull the name from the file
-    std::string idGroup = nodeData->readDataGroup(NodeData::identification);
+    std::string idGroup = node_data->read_data_group(NodeData::identification);
     this->name = idGroup.substr(idGroup.find(A_RECORD_SEP) + 1, idGroup.length());
 
     // Find out how many nodes reference this node
-    std::string connectionGroup = nodeData->readDataGroup(NodeData::connections);
+    std::string connectionGroup = node_data->read_data_group(NodeData::connections);
     int connectionSplit = connectionGroup.find(A_RECORD_SEP);
-    this->referenceCount = atoi(connectionGroup.substr(0, connectionSplit).c_str());
+    this->reference_count = atoi(connectionGroup.substr(0, connectionSplit).c_str());
 
     // Get a list of the nodes this node references
     std::string connectionListString = connectionGroup.substr(connectionSplit + 1, connectionGroup.length());
     int idStart = 0;
     for(int i = 0; i < connectionListString.length(); i++){
         if(connectionListString.at(i) == A_UNIT_SEP){
-            connectionIds.push_back(atoi(connectionListString.substr(idStart, i).c_str()));
+            connection_ids.push_back(atoi(connectionListString.substr(idStart, i).c_str()));
             idStart = ++i;
         }
     }
@@ -30,49 +30,49 @@ Node::Node(std::string& folder, int& id){
 Node::Node(std::string& folder, int& id, std::string& name){
     this->id = id;
     this->name = name;
-    this->referenceCount = 0;
-    this->nodeData = new NodeData(folder, id, name);
+    this->reference_count = 0;
+    this->node_data = new NodeData(folder, id, name);
 }
 
-int& Node::getId(){
+int& Node::get_id(){
     return id;
 }
 
-std::string& Node::getName(){
+std::string& Node::get_name(){
     return name;
 }
 
-std::vector<int>& Node::getConnectionIds(){
-    return connectionIds;
+std::vector<int>& Node::get_connection_ids(){
+    return connection_ids;
 }
 
-void Node::addReference(){
-    referenceCount++;
+void Node::add_reference(){
+    reference_count++;
 }
 
-int& Node::getReferenceCount(){
-    return referenceCount;
+int& Node::get_reference_count(){
+    return reference_count;
 }
 
-void Node::removeReference(){
-    if(--referenceCount == 0){
+void Node::remove_reference(){
+    if(--reference_count == 0){
         delete this;
     }
 }
 
-void Node::addConnection(int& targetId){
-    if(std::find(connectionIds.begin(), connectionIds.end(), targetId) == connectionIds.end()){
-        connectionIds.push_back(targetId);
+void Node::add_connection(int& targetId){
+    if(std::find(connection_ids.begin(), connection_ids.end(), targetId) == connection_ids.end()){
+        connection_ids.push_back(targetId);
     }
 }
 
-void Node::removeConnection(int& targetId){
-    auto it = std::find(connectionIds.begin(), connectionIds.end(), targetId);
-    if(it != connectionIds.end()){
-        connectionIds.erase(it);
+void Node::remove_connection(int& targetId){
+    auto it = std::find(connection_ids.begin(), connection_ids.end(), targetId);
+    if(it != connection_ids.end()){
+        connection_ids.erase(it);
     }
 }
 
 Node::~Node(){
-    delete nodeData;
+    delete node_data;
 }

@@ -14,12 +14,12 @@ NodeData::NodeData(std::string& folder, int& id, std::string& name){
 
 }
 
-std::string& NodeData::readDataGroup(GroupId group_id){
+std::string& NodeData::read_data_group(GroupId group_id){
     int i = group_id;
-    return readDataGroup(i);
+    return read_data_group(i);
 }
 
-std::string& NodeData::readDataGroup(int& group_id){
+std::string& NodeData::read_data_group(int& group_id){
     // File buffer to read the file from
     std::filebuf fb;
     
@@ -75,7 +75,7 @@ std::string& NodeData::readDataGroup(int& group_id){
     return group_str;
 }
 
-std::string* NodeData::readDataGroups(){
+std::string* NodeData::read_data_groups(){
     // File buffer to read the file from
     std::filebuf fb;
     
@@ -127,4 +127,8 @@ std::string* NodeData::readDataGroups(){
 
 bool& NodeData::is_loaded(){
     return dataLoaded;
+}
+
+void NodeData::load_data(){
+
 }

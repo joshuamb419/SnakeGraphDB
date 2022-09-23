@@ -13,13 +13,13 @@ class Node{
         std::string name;
 
         // number of nodes that point to this node
-        int referenceCount;
+        int reference_count;
 
         // Nodes this node points to
-        std::vector<int> connectionIds;
+        std::vector<int> connection_ids;
 
         // Data stored in this node + file management
-        NodeData* nodeData;
+        NodeData* node_data;
     public:
         // Load node from file
         Node(std::string& folder, int& id);
@@ -27,25 +27,25 @@ class Node{
         Node(std::string& folder, int& id, std::string& name);
 
         // ID of this node
-        int& getId();
+        int& get_id();
 
         // Name of this node
-        std::string& getName();
+        std::string& get_name();
 
         // Get ids of the connected nodes
-        std::vector<int>& getConnectionIds();
+        std::vector<int>& get_connection_ids();
 
         // Increments the reference counter
-        void addReference();
+        void add_reference();
         // Get count of nodes pointing to this node
-        int& getReferenceCount();
+        int& get_reference_count();
         // Decrements the reference counter, if reference counter becomes zero the node self-destructs
-        void removeReference();
+        void remove_reference();
 
         // Adds connection to target node
-        void addConnection(int& targetId);
+        void add_connection(int& targetId);
         // Removes connection from this node to the target
-        void removeConnection(int& targetId);
+        void remove_connection(int& targetId);
         
 
         // Delete nodedata

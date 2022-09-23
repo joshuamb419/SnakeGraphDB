@@ -12,7 +12,7 @@
 * Usages of ',' represent usages of the ascii unit seperator
 * 
 * Group 0 (identification)    <node_id>:<node_name>
-* Group 1 (connections)       <referenceCount>:<connectionIds>
+* Group 1 (connections)       <reference_count>:<connection_ids>
 * Group 2 (data)              <key_1>,<value_1>:<key_2>,<value_2>:...:<key_e>,<value_e>
 */
 
@@ -25,12 +25,12 @@ class NodeData{
         std::string filepath;
 
         // non-control data stored in the node
-        std::unordered_map<std::string, std::string>* nodeContents;
+        std::unordered_map<std::string, std::string>* node_contents;
 
         bool dataLoaded = false;
 
         // Returns only the requested data group
-        std::string& readDataGroup(int& group_id);
+        std::string& read_data_group(int& group_id);
 
         // How many bytes to increment the buffer by when reading data
         int SIZE_INC = 100;
@@ -52,19 +52,19 @@ class NodeData{
         // Dumps data out of memory, calls write_data first
         void dump_data();
 
-        std::string& readDataGroup(NodeData::GroupId group_id);
+        std::string& read_data_group(NodeData::GroupId group_id);
         // Returns an array split into the three data groups
-        std::string* readDataGroups();
+        std::string* read_data_groups();
 
         // Returns the value of the key, null if key is not in map
         // if data is not loaded this method will cause data to be loaded
-        std::string& getValue(std::string key);
+        std::string& get_value(std::string key);
         // Sets the value of a key, return indicates if the operation was successful
         // if data is not loaded this method will cause data to be loaded
-        bool setValue(std::string key, std::string value);
+        bool set_value(std::string key, std::string value);
         // Erases the key and the value associated with that key, return indicates if the operation was successful
         // if data is not loaded this method will cause data to be loaded
-        bool eraseValue(std::string key);
+        bool erase_value(std::string key);
 
         // Writes data to disk and frees up memory
         ~NodeData();
