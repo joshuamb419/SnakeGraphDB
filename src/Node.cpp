@@ -5,14 +5,14 @@
 
 Node::Node(std::string& folder, int& id){
     this->id = id;
-    this->nodeData = new NodeData(folder, &(this->id));
+    this->nodeData = new NodeData(folder, id);
 
     // Pull the name from the file
-    std::string idGroup = nodeData->getIdGroup();
+    std::string idGroup = nodeData->readDataGroup(NodeData::identification);
     this->name = idGroup.substr(idGroup.find(A_RECORD_SEP) + 1, idGroup.length());
 
     // Find out how many nodes reference this node
-    std::string connectionGroup = nodeData->getConnectionsGroup();
+    std::string connectionGroup = nodeData->readDataGroup(NodeData::connections);
     int connectionSplit = connectionGroup.find(A_RECORD_SEP);
     this->referenceCount = atoi(connectionGroup.substr(0, connectionSplit).c_str());
 
@@ -31,7 +31,7 @@ Node::Node(std::string& folder, int& id, std::string& name){
     this->id = id;
     this->name = name;
     this->referenceCount = 0;
-    this->nodeData = new NodeData(folder, &(this->id), name);
+    this->nodeData = new NodeData(folder, id, name);
 }
 
 int& Node::getId(){

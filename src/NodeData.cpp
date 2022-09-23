@@ -10,7 +10,13 @@ NodeData::NodeData(std::string& folder, int& id){
 }
 
 NodeData::NodeData(std::string& folder, int& id, std::string& name){
+    this->filepath = folder + std::to_string(id) + FILE_EXT;
 
+}
+
+std::string& NodeData::readDataGroup(GroupId group_id){
+    int i = group_id;
+    return readDataGroup(i);
 }
 
 std::string& NodeData::readDataGroup(int& group_id){
@@ -117,4 +123,8 @@ std::string* NodeData::readDataGroups(){
     fb.close();
 
     return groups;
+}
+
+bool& NodeData::is_loaded(){
+    return dataLoaded;
 }

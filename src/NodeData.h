@@ -31,14 +31,12 @@ class NodeData{
 
         // Returns only the requested data group
         std::string& readDataGroup(int& group_id);
-        // Returns an array split into the three data groups
-        std::string* readDataGroups();
 
         // How many bytes to increment the buffer by when reading data
         int SIZE_INC = 100;
     public:
         // Enum for the data groups
-        enum GroupIds { identification = 0, connections = 1, data = 2 };
+        enum GroupId { identification = 0, connections = 1, data = 2 };
 
         // Load node from the provided folder with
         NodeData(std::string& folder, int& id);
@@ -46,20 +44,17 @@ class NodeData{
         NodeData(std::string& folder, int& id, std::string& name);
 
         // Returns if the data is currently loaded
-        bool& isLoaded();
+        bool& is_loaded();
         // Loads data from file into memory
-        void loadData();
+        void load_data();
         // Writes data to disk
-        void writeData();
-        // Dumps data out of memory, calls writeData first
-        void dumpData();
+        void write_data();
+        // Dumps data out of memory, calls write_data first
+        void dump_data();
 
-        // Returns the Identification group
-        std::string& getIdGroup();
-        // Returns the Connections group
-        std::string& getConnectionsGroup();
-        // Returns the Data group();
-        std::string& getDataGroup();
+        std::string& readDataGroup(NodeData::GroupId group_id);
+        // Returns an array split into the three data groups
+        std::string* readDataGroups();
 
         // Returns the value of the key, null if key is not in map
         // if data is not loaded this method will cause data to be loaded
