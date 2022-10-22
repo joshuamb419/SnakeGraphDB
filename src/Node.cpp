@@ -34,7 +34,6 @@ Node::Node(std::string& folder, int& id){
 
         // remove the processed element form the string
         connectionListString.erase(split_id + 1);
-        
     }
 }
 
@@ -43,6 +42,8 @@ Node::Node(std::string& folder, int& id, std::string& name){
     this->name = name;
     this->reference_count = 0;
     this->filepath = folder + std::to_string(id) + FILE_EXT;
+    data_changed = true;
+    write_data();
 }
 
 int& Node::get_id(){
@@ -59,6 +60,7 @@ std::vector<int>& Node::get_connection_ids(){
 
 void Node::add_reference(){
     reference_count++;
+    data_changed = true;
 }
 
 int& Node::get_reference_count(){
@@ -67,14 +69,17 @@ int& Node::get_reference_count(){
 
 void Node::remove_reference(){
     if(--reference_count == 0){
+        // TODO: Make this delete the file instead of just the object
         delete this;
     }
+    data_changed = true;
 }
 
 void Node::add_connection(int& targetId){
     if(std::find(connection_ids.begin(), connection_ids.end(), targetId) == connection_ids.end()){
         connection_ids.push_back(targetId);
     }
+    data_changed = true;
 }
 
 void Node::remove_connection(int& targetId){
@@ -82,14 +87,15 @@ void Node::remove_connection(int& targetId){
     if(it != connection_ids.end()){
         connection_ids.erase(it);
     }
+    data_changed = true;
 }
 
-std::string& Node::read_data_group(GroupId group_id){
+std::string Node::read_data_group(GroupId group_id){
     int i = group_id;
     return read_data_group_id(i);
 }
 
-std::string& Node::read_data_group_id(int& group_id){
+std::string Node::read_data_group_id(int& group_id){
     // File buffer to read the file from
     std::filebuf fb;
     
@@ -240,8 +246,61 @@ void Node::load_data(){
     data_loaded = true;
 }
 
+// Writing is based on the format found on lines 11-18 of Node.h
+void Node::write_data(){
+    // No need to write data if data hasn't changed
+    if(!data_changed) return;
+
+    if(!data_loaded) load_data();
+
+    std::ofstream ofs(filepath, std::ios::trunc);
+
+    // Group 0 Writing
+    ofs << std::to_string(id) << A_RECORD_SEP << name;
+    ofs << A_GROUP_SEP;
+
+    // Group 1 Writing
+    ofs << std::to_string(reference_count) << A_RECORD_SEP;
+    for(int i = 0; i < connection_ids.size(); i++){
+        ofs << std::to_string(connection_ids.at(i));
+        if(i != connection_ids.size() - 1){
+            ofs << A_UNIT_SEP;
+        }
+    }
+
+    // Group 2 Writing
+    auto last_elm = prev(node_contents->end());
+    for(auto it = node_contents->begin(); it != last_elm; ++it){
+        ofs << it->first << A_UNIT_SEP << it->second << A_RECORD_SEP;
+    }
+    ofs << last_elm->first << A_UNIT_SEP << last_elm->second << A_RECORD_SEP;
+
+    data_changed = false;
+}
+
+std::string& Node::get_value(std::string key){
+    if(!data_loaded) load_data();
+
+    return node_contents->at(key);
+    data_changed = true;
+}
+
+void Node::set_value(std::string key, std::string value){
+    if(!data_loaded) load_data();
+
+    node_contents->erase(key);
+    node_contents->emplace(key, value);
+    data_changed = true;
+}
+
+
+void Node::erase_value(std::string key){
+    if(!data_loaded) load_data();
+
+    node_contents->erase(key);
+    data_changed = true;
+}
 
 Node::~Node(){
-    write_data();
-    delete node_contents;
+    // dump_data();
 }

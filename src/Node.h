@@ -42,11 +42,13 @@ class Node{
 
         bool data_loaded = false;
 
+        bool data_changed = false;
+
         enum GroupId{ identification = 0, connections = 1, data = 2};
         // Read requested data group based on enum
-        std::string& read_data_group(Node::GroupId group_id);
+        std::string read_data_group(Node::GroupId group_id);
         // Returns only the requested data group
-        std::string& read_data_group_id(int& group_id);
+        std::string read_data_group_id(int& group_id);
         // Returns an array split into the three data groups
         std::string* read_data_groups();
 
@@ -87,18 +89,18 @@ class Node{
         void load_data();
         // Writes data to disk
         void write_data();
-        // Dumps data out of memory, calls write_data first
+        // Dumps data out of memory, calls write_data first if changes
         void dump_data();
         
         // Returns the value of the key, null if key is not in map
         // if data is not loaded this method will cause data to be loaded
         std::string& get_value(std::string key);
-        // Sets the value of a key, return indicates if the operation was successful
+        // Sets the value of a key
         // if data is not loaded this method will cause data to be loaded
-        bool set_value(std::string key, std::string value);
-        // Erases the key and the value associated with that key, return indicates if the operation was successful
+        void set_value(std::string key, std::string value);
+        // Erases the key and the value associated with that key
         // if data is not loaded this method will cause data to be loaded
-        bool erase_value(std::string key);
+        void erase_value(std::string key);
 
         // Write data to disk, Delete unordered map
         ~Node();
