@@ -38,7 +38,7 @@ class Node{
         std::string filepath;
 
         // non-control data stored in the node
-        std::unordered_map<std::string, std::string>* node_contents;
+        std::unordered_map<std::string, std::string>* node_contents = NULL;
 
         bool data_loaded = false;
 

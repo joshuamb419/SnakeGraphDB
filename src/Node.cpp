@@ -103,7 +103,8 @@ std::string Node::read_data_group_id(int& group_id){
 
     // Check that the file successfully opened
     if(!fb.is_open()){
-        throw std::invalid_argument("Unable to open file");
+        return "";
+        // throw std::invalid_argument("Unable to open file");
     }
 
     // input stream to read the file through
@@ -206,15 +207,20 @@ bool& Node::is_loaded(){
 }
 
 void Node::load_data(){
-    std::string data_str = read_data_group(Node::data);
-    
-    // Don't try to load if there is no data
-    if(data_str.length() == 0) return;
     // If data is already loaded, do not reload
     if(data_loaded) return;
 
+    std::string data_str = read_data_group(Node::data);
+
     // Initialize the map
     node_contents = new std::unordered_map<std::string, std::string>();
+    // Don't try to load if there is no data
+    if(data_str.length() == 0){
+        data_loaded = true;
+        return;
+    }
+
+
 
     int split_id;
     std::string data_element;
@@ -256,24 +262,29 @@ void Node::write_data(){
     std::ofstream ofs(filepath, std::ios::trunc);
 
     // Group 0 Writing
-    ofs << std::to_string(id) << A_RECORD_SEP << name;
-    ofs << A_GROUP_SEP;
+    ofs << std::to_string(id) << char(A_RECORD_SEP) << name;
+    ofs << char(A_GROUP_SEP);
 
     // Group 1 Writing
-    ofs << std::to_string(reference_count) << A_RECORD_SEP;
+    ofs << std::to_string(reference_count) << char(A_RECORD_SEP);
     for(int i = 0; i < connection_ids.size(); i++){
         ofs << std::to_string(connection_ids.at(i));
         if(i != connection_ids.size() - 1){
-            ofs << A_UNIT_SEP;
+            ofs << char(A_UNIT_SEP);
         }
     }
+    ofs << char(A_GROUP_SEP);
 
     // Group 2 Writing
-    auto last_elm = prev(node_contents->end());
-    for(auto it = node_contents->begin(); it != last_elm; ++it){
-        ofs << it->first << A_UNIT_SEP << it->second << A_RECORD_SEP;
+    if(node_contents->size() == 0){
+        data_changed = false;
+        return;
     }
-    ofs << last_elm->first << A_UNIT_SEP << last_elm->second << A_RECORD_SEP;
+    auto last_elm = node_contents->end();
+    for(auto it = node_contents->begin(); it != last_elm; ++it){
+        ofs << it->first << char(A_UNIT_SEP) << it->second << char(A_RECORD_SEP);
+    }
+    // ofs << last_elm->first << char(A_UNIT_SEP) << last_elm->second << char(A_RECORD_SEP);
 
     data_changed = false;
 }
@@ -282,7 +293,6 @@ std::string& Node::get_value(std::string key){
     if(!data_loaded) load_data();
 
     return node_contents->at(key);
-    data_changed = true;
 }
 
 void Node::set_value(std::string key, std::string value){
