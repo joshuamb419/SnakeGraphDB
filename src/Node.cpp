@@ -286,6 +286,14 @@ void Node::write_data(){
     data_changed = false;
 }
 
+void Node::dump_data(){
+    if(!data_loaded) return;
+    
+    write_data();
+    if(node_contents != NULL) delete node_contents;
+    data_loaded = false;
+}
+
 std::string& Node::get_value(std::string key){
     if(!data_loaded) load_data();
 
@@ -313,7 +321,5 @@ bool Node::delete_node(){
 }
 
 Node::~Node(){
-    if(node_contents != NULL) {
-        delete node_contents;
-    }
+    dump_data();
 }

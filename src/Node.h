@@ -106,7 +106,7 @@ class Node{
         // Returns false if the node failed to delete
         bool delete_node();
 
-        // Delete unordered map
+        // Delete unordered map, will write data first if there are changes
         ~Node();
 };
 #endif
