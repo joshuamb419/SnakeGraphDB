@@ -68,10 +68,7 @@ int& Node::get_reference_count(){
 }
 
 void Node::remove_reference(){
-    if(--reference_count == 0){
-        // TODO: Make this delete the file instead of just the object
-        delete this;
-    }
+    reference_count--;
     data_changed = true;
 }
 
@@ -311,6 +308,12 @@ void Node::erase_value(std::string key){
     data_changed = true;
 }
 
+bool Node::delete_node(){
+    return remove(filepath.c_str()) == 0;
+}
+
 Node::~Node(){
-    // dump_data();
+    if(node_contents != NULL) {
+        delete node_contents;
+    }
 }

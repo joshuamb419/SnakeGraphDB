@@ -1,15 +1,20 @@
 CC = g++
 CFLAGS = -std=c++11 -fdiagnostics-color=always -g
 TARGET = ./target/
-EXE_FILE = main
-TAR_NAME = JoshuaBrown_Assign3
+EXE_FILE = snake_graph
+DBFOLDER = ./db_folder/
+TAR_NAME = SnakeGraphDB
 
 SRCEXT = cpp
-SOURCES = $(shell find $(SRCDIR) -type f -name "*.$(SRCEXT)")
+SOURCES = $(shell find ./src/ -type f -name "*.$(SRCEXT)")
 OBJECTS = $(addprefix $(TARGET),$(notdir $(SOURCES:.cpp=.o)))
 
 build: $(TARGET) $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $(EXE_FILE)
+
+run: $(DBFOLDER)
+	make build
+	./$(EXE_FILE)
 
 test: $(TARGET) main.cpp
 	$(CC) $(CFLAGS) main.cpp -o test
@@ -17,7 +22,10 @@ test: $(TARGET) main.cpp
 $(TARGET):
 	mkdir $(TARGET)
 
-$(TARGET)%.o: %.$(SRCEXT)
+$(DBFOLDER):
+	mkdir $(DBFOLDER)
+
+$(TARGET)%.o: ./src/%.$(SRCEXT)
 	$(CC) $(CFLAGS) -c -o ./$@ $<
 
 tar:

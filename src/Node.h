@@ -74,7 +74,7 @@ class Node{
         void add_reference();
         // Get count of nodes pointing to this node
         int& get_reference_count();
-        // Decrements the reference counter, if reference counter becomes zero the node self-destructs
+        // Decrements the reference counter
         void remove_reference();
 
         // Adds connection to target node
@@ -102,7 +102,11 @@ class Node{
         // if data is not loaded this method will cause data to be loaded
         void erase_value(std::string key);
 
-        // Write data to disk, Delete unordered map
+        // Deletes the file this node references, the object will not be lost
+        // Returns false if the node failed to delete
+        bool delete_node();
+
+        // Delete unordered map
         ~Node();
 };
 #endif
