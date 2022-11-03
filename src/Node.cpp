@@ -12,37 +12,21 @@ Node::Node(std::string& folder, int& id){
     // Pull the name from the file
     std::string idGroup = read_data_group(Node::identification);
     this->name = idGroup.substr(idGroup.find(A_RECORD_SEP) + 1);
-
-    // Find out how many nodes reference this node
-    std::string connectionGroup = read_data_group(Node::connections);
-    int connectionSplit = connectionGroup.find(A_RECORD_SEP);
-    this->reference_count = atoi(connectionGroup.substr(0, connectionSplit).c_str());
-
-    // Get a list of the nodes this node references
-    std::string connectionListString = connectionGroup.substr(connectionSplit + 1);
-    int split_id;
-    while(connectionListString.length() > 0){
-        split_id = connectionListString.find(A_UNIT_SEP);
-
-        // add id to the vector
-        if(split_id == std::string::npos){
-            split_id = connectionListString.length() - 1;
-            connection_ids.push_back(atoi(connectionListString.c_str()));
-        } else {
-            connection_ids.push_back(atoi(connectionListString.substr(0, split_id).c_str()));
-        }
-
-        // remove the processed element form the string
-        connectionListString.erase(split_id + 1);
-    }
 }
 
 Node::Node(std::string& folder, int& id, std::string& name){
+    Node(folder, id, name, true);
+}
+
+Node::Node(std::string& folder, int& id, std::string& name, bool overwrite){
     this->id = id;
     this->name = name;
-    this->reference_count = 0;
     this->filepath = folder + std::to_string(id) + FILE_EXT;
     data_changed = true;
+    if(overwrite) {
+        data_loaded = true;
+        delete_node();
+    }
     write_data();
 }
 
@@ -52,39 +36,6 @@ int& Node::get_id(){
 
 std::string& Node::get_name(){
     return name;
-}
-
-std::vector<int>& Node::get_connection_ids(){
-    return connection_ids;
-}
-
-void Node::add_reference(){
-    reference_count++;
-    data_changed = true;
-}
-
-int& Node::get_reference_count(){
-    return reference_count;
-}
-
-void Node::remove_reference(){
-    reference_count--;
-    data_changed = true;
-}
-
-void Node::add_connection(int& targetId){
-    if(std::find(connection_ids.begin(), connection_ids.end(), targetId) == connection_ids.end()){
-        connection_ids.push_back(targetId);
-    }
-    data_changed = true;
-}
-
-void Node::remove_connection(int& targetId){
-    auto it = std::find(connection_ids.begin(), connection_ids.end(), targetId);
-    if(it != connection_ids.end()){
-        connection_ids.erase(it);
-    }
-    data_changed = true;
 }
 
 std::string Node::read_data_group(GroupId group_id){
@@ -169,7 +120,7 @@ std::string* Node::read_data_groups(){
     char c;
     int peek = inputStream.peek();
 
-    for(int i = 0; i < 3; i++){
+    for(int i = 0; i < 2; i++){
         int size = SIZE_INC;
         int buffer_used = 0;
         char* buffer = (char*) malloc(size);
@@ -262,16 +213,6 @@ void Node::write_data(){
     ofs << std::to_string(id) << char(A_RECORD_SEP) << name;
     ofs << char(A_GROUP_SEP);
 
-    // Group 1 Writing
-    ofs << std::to_string(reference_count) << char(A_RECORD_SEP);
-    for(int i = 0; i < connection_ids.size(); i++){
-        ofs << std::to_string(connection_ids.at(i));
-        if(i != connection_ids.size() - 1){
-            ofs << char(A_UNIT_SEP);
-        }
-    }
-    ofs << char(A_GROUP_SEP);
-
     // Group 2 Writing
     if(node_contents->size() == 0){
         data_changed = false;
@@ -281,7 +222,6 @@ void Node::write_data(){
     for(auto it = node_contents->begin(); it != last_elm; ++it){
         ofs << it->first << char(A_UNIT_SEP) << it->second << char(A_RECORD_SEP);
     }
-    // ofs << last_elm->first << char(A_UNIT_SEP) << last_elm->second << char(A_RECORD_SEP);
 
     data_changed = false;
 }

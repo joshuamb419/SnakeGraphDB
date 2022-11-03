@@ -14,8 +14,7 @@ class Node{
     * Usages of ',' represent usages of the ascii unit seperator
     * 
     * Group 0 (identification)    <node_id>:<node_name>
-    * Group 1 (connections)       <reference_count>:<connection_ids>
-    * Group 2 (data)              <key_1>,<value_1>:<key_2>,<value_2>:...:<key_e>,<value_e>
+    * Group 1 (data)              <key_1>,<value_1>:<key_2>,<value_2>:...:<key_e>,<value_e>
     */
 
     private:
@@ -24,12 +23,6 @@ class Node{
 
         // Text name used for searching + readability
         std::string name;
-
-        // number of nodes that point to this node
-        int reference_count;
-
-        // Nodes this node points to
-        std::vector<int> connection_ids;
 
         // string to be appended after node id to get file name
         std::string FILE_EXT = "_data.sgnd";
@@ -44,7 +37,7 @@ class Node{
 
         bool data_changed = false;
 
-        enum GroupId{ identification = 0, connections = 1, data = 2};
+        enum GroupId{ identification = 0, data = 1};
         // Read requested data group based on enum
         std::string read_data_group(Node::GroupId group_id);
         // Returns only the requested data group
@@ -60,27 +53,14 @@ class Node{
         Node(std::string& folder, int& id);
         // Create Node with id and name
         Node(std::string& folder, int& id, std::string& name);
+        // Says whether or not to overwrite an existing node with the same id
+        Node(std::string& folder, int& id, std::string& name, bool overwrite);
 
         // ID of this node
         int& get_id();
 
         // Name of this node
         std::string& get_name();
-
-        // Get ids of the connected nodes
-        std::vector<int>& get_connection_ids();
-
-        // Increments the reference counter
-        void add_reference();
-        // Get count of nodes pointing to this node
-        int& get_reference_count();
-        // Decrements the reference counter
-        void remove_reference();
-
-        // Adds connection to target node
-        void add_connection(int& targetId);
-        // Removes connection from this node to the target
-        void remove_connection(int& targetId);
 
         // Returns if the data is currently loaded
         bool& is_loaded();
