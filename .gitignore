@@ -1,4 +1,5 @@
 *.o
 *.exe
 .vscode/
-testfolder/
+db_folder/
+snake_graph
