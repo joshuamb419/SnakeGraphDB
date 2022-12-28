@@ -13,8 +13,9 @@ class Node{
     * Usages of ':' represent usages of the ascii record seperator
     * Usages of ',' represent usages of the ascii unit seperator
     * 
-    * Group 0 (identification)    <node_id>:<node_name>
-    * Group 1 (data)              <key_1>,<value_1>:<key_2>,<value_2>:...:<key_e>,<value_e>
+    * Group 0 (identification)  <node_id>:<node_name>
+    * Group 1 (keys)            <key_1><32_bit_pos_1><32_bit_len_1>:<key_2><32_bit_pos_2><32_bit_len_2>:...:<key_n><32_bit_pos_n><32_bit_len_n>
+    * Group 2 (data)            <value_1><value_2>...<value_n>
     */
 
     private:
@@ -25,36 +26,31 @@ class Node{
         std::string name;
 
         // string to be appended after node id to get file name
-        std::string FILE_EXT = "_data.sgnd";
+        std::string FILE_EXT = ".sgnd";
 
         // path to this nodes file
         std::string filepath;
 
         // non-control data stored in the node
-        std::unordered_map<std::string, std::string>* node_contents = NULL;
+        std::unordered_map<std::string, std::vector<unsigned char>>* node_contents = NULL;
 
         bool data_loaded = false;
 
         bool data_changed = false;
 
-        enum GroupId{ identification = 0, data = 1};
+        enum GroupId{ identification = 0, keys = 1, data = 2 };
         // Read requested data group based on enum
         std::string read_data_group(Node::GroupId group_id);
         // Returns only the requested data group
         std::string read_data_group_id(int& group_id);
-        // Returns an array split into the three data groups
-        std::string* read_data_groups();
 
-        // How many bytes to increment the buffer by when reading data
-        int SIZE_INC = 100;
     public:
-
         // Load node from file
-        Node(std::string& folder, int& id);
+        Node(std::string& folder, int id);
         // Create Node with id and name
-        Node(std::string& folder, int& id, std::string& name);
+        Node(std::string& folder, int id, std::string& name);
         // Says whether or not to overwrite an existing node with the same id
-        Node(std::string& folder, int& id, std::string& name, bool overwrite);
+        Node(std::string& folder, int id, std::string& name, bool overwrite);
 
         // ID of this node
         int& get_id();
@@ -74,10 +70,10 @@ class Node{
         
         // Returns the value of the key, null if key is not in map
         // if data is not loaded this method will cause data to be loaded
-        std::string& get_value(std::string key);
+        std::vector<unsigned char>& get_value(std::string key);
         // Sets the value of a key
         // if data is not loaded this method will cause data to be loaded
-        void set_value(std::string key, std::string value);
+        void set_value(std::string key, std::vector<unsigned char> value);
         // Erases the key and the value associated with that key
         // if data is not loaded this method will cause data to be loaded
         void erase_value(std::string key);
