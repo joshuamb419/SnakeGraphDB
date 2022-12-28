@@ -6,19 +6,30 @@
 #include <iostream>
 #include <cstdint>
 #include <queue>
+#include <sstream>
 
 Node::Node(std::string& folder, int id){
     this->id = id;
     this->filepath = folder + std::to_string(id) + FILE_EXT;
 
     // Pull the name from the file
-    std::string idGroup = read_data_group(Node::identification);
-    this->name = idGroup.substr(idGroup.find(A_RECORD_SEP) + 1);
+    std::ifstream ifs(filepath, std::ios::binary);
+    if(!ifs.is_open()) throw std::invalid_argument("Unable to open file");
+
+    char c;
+    ifs.get(c);
+    while(c != A_RECORD_SEP) {
+        ifs.get(c);
+    }
+
+    ifs.get(c);
+    while(c != A_GROUP_SEP) {
+        this->name += c;
+        ifs.get(c);
+    }
 }
 
-Node::Node(std::string& folder, int id, std::string& name){
-    Node(folder, id, name, true);
-}
+Node::Node(std::string& folder, int id, std::string& name) : Node(folder, id, name, true) {}
 
 Node::Node(std::string& folder, int id, std::string& name, bool overwrite){
     this->id = id;
@@ -41,68 +52,6 @@ std::string& Node::get_name(){
     return name;
 }
 
-std::string Node::read_data_group(GroupId group_id){
-    int i = group_id;
-    return read_data_group_id(i);
-}
-
-std::string Node::read_data_group_id(int& group_id){
-    // File buffer to read the file from
-    std::filebuf fb;
-    
-    fb.open(filepath, std::ios::in);
-
-    // Check that the file successfully opened
-    if(!fb.is_open()){
-        return "";
-        // throw std::invalid_argument("Unable to open file");
-    }
-
-    // input stream to read the file through
-    std::istream inputStream(&fb);
-
-    char c;
-    int peek = inputStream.peek();
-
-    // Progress through the file until we are at the desired group
-    for(int i = group_id; i--; i > 0){
-        while(peek != EOF && peek != A_GROUP_SEP){
-            inputStream.get(c);
-            peek = inputStream.peek();
-        }
-        inputStream.get(c);
-        peek = inputStream.peek();
-    }
-
-
-    // Initialize buffer
-    int size = 10;
-    int buffer_used = 0;
-    char* buffer = (char*) malloc(size);
-
-    // Read the selected group to buffer
-    while(peek != EOF && peek != A_GROUP_SEP){
-         // If more buffer is full, expand the buffer
-        if(buffer_used + 1 >= size){
-            size *= 2;
-            buffer = (char*) realloc(buffer, size);
-        }
-        inputStream.get(c);
-        peek = inputStream.peek();
-        buffer[buffer_used++] = c;
-    }
-
-    // Put buffer into string
-    buffer[buffer_used] = 0;
-    std::string group_str(buffer);
-
-    // Free resources
-    free(buffer);
-    fb.close();
-
-    return group_str;
-}
-
 bool& Node::is_loaded(){
     return data_loaded;
 }
@@ -113,12 +62,54 @@ void Node::load_data(){
 
     node_contents = new std::unordered_map<std::string, std::vector<unsigned char>>();
 
+    std::ifstream ifs(filepath, std::ios::binary);
+
+    if(!ifs.is_open()) throw std::invalid_argument("Unable to open file");
+
     data_loaded = true;
+
+    char c = ' ';
+    while(c != A_GROUP_SEP) { ifs.get(c); }
+
+    ifs.get(c);
+
+    while(c != A_GROUP_SEP) {
+        std::string key;
+        while(c != A_UNIT_SEP) {
+            key += c;
+            ifs.get(c);
+        }
+
+        uint32_t pos;
+        ifs.read((char*) (&pos), sizeof(pos));
+
+        uint32_t len;
+        ifs.read((char*) (&len), sizeof(len));
+
+        int old_pos = ifs.tellg();
+        ifs.seekg(pos);
+        std::vector<unsigned char> value;
+        for(int i = 0; i < len; i++) {
+            ifs.get(c);
+            value.push_back(c);
+        }
+        ifs.seekg(old_pos);
+
+        node_contents->emplace(key, value);
+
+        std::printf("\nKey: %s\nPosition: %d\nLength: %d\nValue: ", key.c_str(), pos, len);
+        for(char d : value) {
+            std::cout << d;
+        }
+        std::cout << std::endl;
+
+        ifs.get(c);
+    }
+
 }
 
 // Writing is based on the format found on lines 11-18 of Node.h
 void Node::write_data(){
-    std::cout << this->id << std::endl;
 
     // No need to write data if data hasn't changed
     if(!data_changed) return;
@@ -132,7 +123,6 @@ void Node::write_data(){
     ofs << char(A_GROUP_SEP);
 
     uint32_t pos = ofs.tellp();
-    pos--;
 
     // Group 1 Writing
 
@@ -146,7 +136,7 @@ void Node::write_data(){
 
     for(auto it : *node_contents) {
         pos += it.first.length();
-        pos += 9;
+        pos += 10;
     }
 
     std::queue<std::string> key_order = std::queue<std::string>();
@@ -154,6 +144,7 @@ void Node::write_data(){
     int i = 0;
     for(auto it : *node_contents) {
         ofs << it.first;
+        ofs << char(A_UNIT_SEP);
         key_order.push(it.first);
         uint32_t size = it.second.size();
         ofs.write((char*) (&pos), 4);
@@ -212,5 +203,5 @@ bool Node::delete_node(){
 }
 
 Node::~Node(){
-    // dump_data();
+    dump_data();
 }

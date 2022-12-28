@@ -14,7 +14,7 @@ class Node{
     * Usages of ',' represent usages of the ascii unit seperator
     * 
     * Group 0 (identification)  <node_id>:<node_name>
-    * Group 1 (keys)            <key_1><32_bit_pos_1><32_bit_len_1>:<key_2><32_bit_pos_2><32_bit_len_2>:...:<key_n><32_bit_pos_n><32_bit_len_n>
+    * Group 1 (keys)            <key_1>,<32_bit_pos_1><32_bit_len_1><key_2>,<32_bit_pos_2><32_bit_len_2>...<key_n>,<32_bit_pos_n><32_bit_len_n>
     * Group 2 (data)            <value_1><value_2>...<value_n>
     */
 
@@ -37,12 +37,6 @@ class Node{
         bool data_loaded = false;
 
         bool data_changed = false;
-
-        enum GroupId{ identification = 0, keys = 1, data = 2 };
-        // Read requested data group based on enum
-        std::string read_data_group(Node::GroupId group_id);
-        // Returns only the requested data group
-        std::string read_data_group_id(int& group_id);
 
     public:
         // Load node from file
