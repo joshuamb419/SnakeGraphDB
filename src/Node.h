@@ -65,9 +65,21 @@ class Node{
         // Returns the value of the key, null if key is not in map
         // if data is not loaded this method will cause data to be loaded
         std::vector<unsigned char>& get_value(std::string key);
+        // returns the length of the value
+        int get_value(std::string key, char*& pointer);
+        void get_value(std::string key, std::string& value);
+        void get_value(std::string key, int32_t& value);
+        void get_value(std::string key, double& value);
+        void get_value(std::string key, bool& value);
+
         // Sets the value of a key
         // if data is not loaded this method will cause data to be loaded
         void set_value(std::string key, std::vector<unsigned char> value);
+        void set_value(std::string key, char* pointer, int length);
+        void set_value(std::string key, std::string value);
+        void set_value(std::string key, int32_t value);
+        void set_value(std::string key, double value);
+        void set_value(std::string key, bool value);
         // Erases the key and the value associated with that key
         // if data is not loaded this method will cause data to be loaded
         void erase_value(std::string key);

@@ -27,6 +27,8 @@ Node::Node(std::string& folder, int id){
         this->name += c;
         ifs.get(c);
     }
+
+    ifs.close();
 }
 
 Node::Node(std::string& folder, int id, std::string& name) : Node(folder, id, name, true) {}
@@ -73,7 +75,7 @@ void Node::load_data(){
 
     ifs.get(c);
 
-    while(c != A_GROUP_SEP) {
+    while(c != char(A_GROUP_SEP)) {
         std::string key;
         while(c != A_UNIT_SEP) {
             key += c;
@@ -97,15 +99,14 @@ void Node::load_data(){
 
         node_contents->emplace(key, value);
 
-        std::printf("\nKey: %s\nPosition: %d\nLength: %d\nValue: ", key.c_str(), pos, len);
-        for(char d : value) {
-            std::cout << d;
-        }
-        std::cout << std::endl;
+        // std::printf("\nKey: %s\nPosition: %d\nLength: %d\nValue: ", key.c_str(), pos, len);
+        // for(char d : value) {
+        //     std::cout << d;
+        // }
+        // std::cout << std::endl;
 
         ifs.get(c);
     }
-
 }
 
 // Writing is based on the format found on lines 11-18 of Node.h
@@ -136,8 +137,10 @@ void Node::write_data(){
 
     for(auto it : *node_contents) {
         pos += it.first.length();
-        pos += 10;
+        pos += 9;
     }
+
+    pos++;
 
     std::queue<std::string> key_order = std::queue<std::string>();
 
@@ -150,8 +153,6 @@ void Node::write_data(){
         ofs.write((char*) (&pos), 4);
         ofs.write((char*) (&size), 4);
         pos += size;
-
-        if(++i != node_contents->size()) ofs << char(A_RECORD_SEP);
     }
 
     ofs << char(A_GROUP_SEP);
@@ -171,8 +172,9 @@ void Node::write_data(){
 }
 
 void Node::dump_data(){  
+    if(!data_loaded) return;
     write_data();
-    if(node_contents != NULL) delete node_contents;
+    delete node_contents;
     data_loaded = false;
 }
 
@@ -182,7 +184,33 @@ std::vector<unsigned char>& Node::get_value(std::string key) {
     return node_contents->at(key);
 }
 
-void Node::set_value(std::string key, std::vector<unsigned char> value){
+int Node::get_value(std::string key, char*& pointer) {
+    std::vector<unsigned char>& data = get_value(key);
+    pointer = (char *) data.data();
+    return data.size();
+}
+
+void Node::get_value(std::string key, std::string& value) {
+    std::vector<unsigned char>& data = get_value(key);
+    value = std::string(data.begin(), data.end());
+}
+
+void Node::get_value(std::string key, int32_t& value) {
+    std::vector<unsigned char>& data = get_value(key);
+    value = *((int*) data.data());
+}
+
+void Node::get_value(std::string key, double& value) {
+    std::vector<unsigned char>& data = get_value(key);
+    value = *((double*) data.data());
+}
+
+void Node::get_value(std::string key, bool& value) {
+    std::vector<unsigned char>& data = get_value(key);
+    value = *((bool*) data.data());
+}
+
+void Node::set_value(std::string key, std::vector<unsigned char> value) {
     if(!data_loaded) load_data();
 
     node_contents->erase(key);
@@ -190,18 +218,46 @@ void Node::set_value(std::string key, std::vector<unsigned char> value){
     data_changed = true;
 }
 
+void Node::set_value(std::string key, char* pointer, int length) {
+    std::vector<unsigned char> data(pointer, pointer + length);
+    set_value(key, data);
+}
 
-void Node::erase_value(std::string key){
+void Node::set_value(std::string key, std::string value) {
+    std::vector<unsigned char> data(value.begin(), value.end());
+    set_value(key, data);
+}
+
+void Node::set_value(std::string key, int32_t value) {
+    unsigned char* d = reinterpret_cast<unsigned char*>(&value);
+    std::vector<unsigned char> data(d, d + sizeof(value));
+    set_value(key, data);
+}
+
+void Node::set_value(std::string key, double value) {
+    unsigned char* d = reinterpret_cast<unsigned char*>(&value);
+    std::vector<unsigned char> data(d, d + sizeof(value));
+    set_value(key, data);
+}
+
+void Node::set_value(std::string key, bool value) {
+    unsigned char* d = reinterpret_cast<unsigned char*>(&value);
+    std::vector<unsigned char> data(d, d + sizeof(value));
+    set_value(key, data);
+}
+
+
+void Node::erase_value(std::string key) {
     if(!data_loaded) load_data();
 
     node_contents->erase(key);
     data_changed = true;
 }
 
-bool Node::delete_node(){
+bool Node::delete_node() {
     return remove(filepath.c_str()) == 0;
 }
 
-Node::~Node(){
+Node::~Node() {
     dump_data();
 }
