@@ -1,11 +1,11 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef SG_NODE_H
+#define SG_NODE_H
 
 #include <string>
 #include <vector>
 #include <unordered_map>
 
-class Node{
+class SGNode{
 
     /*
     * *.sgnd files are formatted as follows
@@ -38,57 +38,61 @@ class Node{
 
         bool data_changed = false;
 
-    public:
+    protected:
+        SGNode();
         // Load node from file
-        Node(std::string& folder, int id);
-        // Create Node with id and name
-        Node(std::string& folder, int id, std::string& name);
+        SGNode(std::string& folder, int id);
+        // Create SGNode with id and name
+        SGNode(std::string& folder, int id, std::string& name);
         // Says whether or not to overwrite an existing node with the same id
-        Node(std::string& folder, int id, std::string& name, bool overwrite);
-
-        // ID of this node
-        int& get_id();
-
-        // Name of this node
-        std::string& get_name();
-
-        // Returns if the data is currently loaded
-        bool& is_loaded();
-        // Loads data from file into memory
-        // If data is already loaded it will NOT reload data
-        void load_data();
-        // Writes data to disk
-        void write_data();
-        // Dumps data out of memory, calls write_data first if changes
-        void dump_data();
-        
-        // Returns the value of the key, null if key is not in map
-        // if data is not loaded this method will cause data to be loaded
-        std::vector<unsigned char>& get_value(std::string key);
-        // returns the length of the value
-        int get_value(std::string key, char*& pointer);
-        void get_value(std::string key, std::string& value);
-        void get_value(std::string key, int32_t& value);
-        void get_value(std::string key, double& value);
-        void get_value(std::string key, bool& value);
-
-        // Sets the value of a key
-        // if data is not loaded this method will cause data to be loaded
-        void set_value(std::string key, std::vector<unsigned char> value);
-        void set_value(std::string key, char* pointer, int length);
-        void set_value(std::string key, std::string value);
-        void set_value(std::string key, int32_t value);
-        void set_value(std::string key, double value);
-        void set_value(std::string key, bool value);
-        // Erases the key and the value associated with that key
-        // if data is not loaded this method will cause data to be loaded
-        void erase_value(std::string key);
+        SGNode(std::string& folder, int id, std::string& name, bool overwrite);
 
         // Deletes the file this node references, the object will not be lost
         // Returns false if the node failed to delete
-        bool delete_node();
+        bool deleteNode();
 
         // Delete unordered map, will write data first if there are changes
-        ~Node();
+        ~SGNode();
+    public:
+        // ID of this node
+        int& getId();
+
+        // Name of this node
+        std::string& getName();
+
+        // Returns if the data is currently loaded
+        bool& isLoaded();
+        // Loads data from file into memory
+        // If data is already loaded it will NOT reload data
+        void loadData();
+        // Writes data to disk
+        void write_data();
+        // Dumps data out of memory, calls write_data first if changes
+        void dumpData();
+        
+        // Returns the value of the key, null if key is not in map
+        // if data is not loaded this method will cause data to be loaded
+        std::vector<unsigned char>& getValue(std::string key);
+        // returns the length of the value
+        int getValue(std::string key, char*& pointer);
+        void getValue(std::string key, std::string& value);
+        void getValue(std::string key, int32_t& value);
+        void getValue(std::string key, double& value);
+        void getValue(std::string key, bool& value);
+
+        // Sets the value of a key
+        // if data is not loaded this method will cause data to be loaded
+        void setValue(std::string key, std::vector<unsigned char> value);
+        void setValue(std::string key, char* pointer, int length);
+        void setValue(std::string key, std::string value);
+        void setValue(std::string key, int32_t value);
+        void setValue(std::string key, double value);
+        void setValue(std::string key, bool value);
+        // Erases the key and the value associated with that key
+        // if data is not loaded this method will cause data to be loaded
+        void eraseValue(std::string key);
+
+    friend class SnakeGraph;
+    friend class SGLinkManager;
 };
 #endif
