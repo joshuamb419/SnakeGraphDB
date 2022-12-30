@@ -26,7 +26,7 @@ class SGNode{
         std::string name;
 
         // string to be appended after node id to get file name
-        std::string FILE_EXT = ".sgnd";
+        std::string FILE_EXT = ".sgn";
 
         // path to this nodes file
         std::string filepath;
@@ -40,12 +40,10 @@ class SGNode{
 
     protected:
         SGNode();
-        // Load node from file
-        SGNode(std::string& folder, int id);
-        // Create SGNode with id and name
+        // Load SGNode
         SGNode(std::string& folder, int id, std::string& name);
         // Says whether or not to overwrite an existing node with the same id
-        SGNode(std::string& folder, int id, std::string& name, bool overwrite);
+        SGNode(std::string& folder, int id, std::string& name, bool writeOnLoad);
 
         // Deletes the file this node references, the object will not be lost
         // Returns false if the node failed to delete
@@ -66,7 +64,7 @@ class SGNode{
         // If data is already loaded it will NOT reload data
         void loadData();
         // Writes data to disk
-        void write_data();
+        void writeData();
         // Dumps data out of memory, calls write_data first if changes
         void dumpData();
         

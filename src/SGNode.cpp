@@ -8,42 +8,20 @@
 #include <queue>
 #include <sstream>
 
-SGNode::SGNode(std::string& folder, int id){
-    this->id = id;
-    this->filepath = folder + std::to_string(id) + FILE_EXT;
+SGNode::SGNode(std::string& folder, int id, std::string& name) : SGNode(folder, id, name, false) {}
 
-    // Pull the name from the file
-    std::ifstream ifs(filepath, std::ios::binary);
-    if(!ifs.is_open()) throw std::invalid_argument("Unable to open file");
-
-    char c;
-    ifs.get(c);
-    while(c != A_RECORD_SEP) {
-        ifs.get(c);
-    }
-
-    ifs.get(c);
-    while(c != A_GROUP_SEP) {
-        this->name += c;
-        ifs.get(c);
-    }
-
-    ifs.close();
-}
-
-SGNode::SGNode(std::string& folder, int id, std::string& name) : SGNode(folder, id, name, true) {}
-
-SGNode::SGNode(std::string& folder, int id, std::string& name, bool overwrite){
+SGNode::SGNode(std::string& folder, int id, std::string& name, bool writeOnLoad){
     this->id = id;
     this->name = name;
     this->filepath = folder + std::to_string(id) + FILE_EXT;
-    data_changed = true;
-    if(overwrite) {
+    
+    if(writeOnLoad) {
+        data_changed = true;
         data_loaded = true;
         node_contents = new std::unordered_map<std::string, std::vector<unsigned char>>();
         deleteNode();
+        writeData();
     }
-    write_data();
 }
 
 int& SGNode::getId(){
@@ -110,7 +88,7 @@ void SGNode::loadData(){
 }
 
 // Writing is based on the format found on lines 11-18 of SGNode.h
-void SGNode::write_data(){
+void SGNode::writeData(){
 
     // No need to write data if data hasn't changed
     if(!data_changed) return;
@@ -173,7 +151,7 @@ void SGNode::write_data(){
 
 void SGNode::dumpData(){  
     if(!data_loaded) return;
-    write_data();
+    writeData();
     delete node_contents;
     data_loaded = false;
 }
