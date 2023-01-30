@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <map>
 
 #include "SGLinkManager.h"
 #include "SGNode.h"
@@ -9,6 +10,14 @@ struct SGLink {
     int destId;
     std::string title;
 };
+
+inline bool operator==(const SGLink* sgl, const std::string& str) {
+    return sgl->title == str;
+}
+
+inline bool operator!=(const SGLink* sgl, const std::string& str) {
+    return !(sgl == str);
+}
 
 void SGLinkManager::addLink(int src, SGNode* dest, std::string linkTitle) {
     SGLink* link = (SGLink*) malloc(sizeof(struct SGLink));
@@ -28,7 +37,7 @@ void SGLinkManager::removeLink(int src, SGNode* dest, std::string linkTitle) {
     auto its = link_map.equal_range(src);
 
     for(auto linkIt = its.first; linkIt != its.second; linkIt++) {
-        if(linkIt->second->dest == dest && linkIt->second->title == linkTitle) {
+        if(linkIt->second->dest == dest && linkIt->second == linkTitle) {
             free(linkIt->second);
             link_map.erase(linkIt);
             break;
@@ -82,7 +91,7 @@ std::vector<SGNode*>& SGLinkManager::getLinks(int src, std::string linkTitle) {
     std::vector<SGNode*> links;
 
     for(auto linkIt = its.first; linkIt != its.second; linkIt++) {
-        if(linkIt->second->title != linkTitle) continue;
+        if(linkIt->second != linkTitle) continue;
 
         if(dest_set.count(linkIt->second->destId) == 0) {
             free(linkIt->second);

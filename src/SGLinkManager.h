@@ -1,7 +1,7 @@
 #ifndef SG_LINK_MANAGER
 #define SG_LINK_MANAGER
 
-#include <unordered_map>
+#include <map>
 #include <vector>
 #include <set>
 
@@ -9,15 +9,21 @@
 
 class SGLinkManager {
     private:
-        std::unordered_multimap<int, struct SGLink*> link_map;
+        // Provides all links indexed by source node
+        std::multimap<int, struct SGLink*> link_map;
+
+        // Stores all destination nodes, prevents links from being valid if the
+        // destination has been removed from the manager
         std::set<int> dest_set;
     
     protected:
         SGLinkManager();
 
+        // Link from source to dest is created with title linkTitle
         void addLink(int src, SGNode* dest, std::string linkTitle);
         inline void addLink(SGNode* src, SGNode* dest, std::string linkTitle);
         
+        // Link from source to dest with matching link title is removed
         void removeLink(int src, SGNode* dest, std::string linkTitle);
         inline void removeLink(SGNode* src, SGNode* dest, std::string linkTitle);
 
