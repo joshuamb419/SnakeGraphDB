@@ -3,3 +3,5 @@
 .vscode/
 db_folder/
 snake_graph
+.cache/
+.fleet/
