@@ -5,3 +5,4 @@ db_folder/
 snake_graph
 .cache/
 .fleet/
+compile_commands.json
