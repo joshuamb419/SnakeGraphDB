@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <unordered_map>
 
 class SGNode{
@@ -14,8 +15,9 @@ class SGNode{
     * Usages of ',' represent usages of the ascii unit seperator
     * 
     * Group 0 (identification)  <node_id>:<node_name>
-    * Group 1 (keys)            <key_1>,<32_bit_pos_1><32_bit_len_1><key_2>,<32_bit_pos_2><32_bit_len_2>...<key_n>,<32_bit_pos_n><32_bit_len_n>
-    * Group 2 (data)            <value_1><value_2>...<value_n>
+    * Group 1 (labels)          <label_1>,<label_2>...<label_n>
+    * Group 2 (keys)            <key_1>,<32_bit_pos_1><32_bit_len_1><key_2>,<32_bit_pos_2><32_bit_len_2>...<key_n>,<32_bit_pos_n><32_bit_len_n>
+    * Group 3 (data)            <value_1><value_2>...<value_n>
     */
 
     private:
@@ -34,16 +36,19 @@ class SGNode{
         // non-control data stored in the node
         std::unordered_map<std::string, std::vector<unsigned char>>* node_contents = NULL;
 
+        // Labels used for querying
+        std::set<std::string> labels;
+
         bool data_loaded = false;
 
         bool data_changed = false;
 
-    protected:
+    public:
         SGNode();
         // Load SGNode
         SGNode(std::string& folder, int id, std::string& name);
         // Says whether or not to overwrite an existing node with the same id
-        SGNode(std::string& folder, int id, std::string& name, bool writeOnLoad);
+        SGNode(std::string& folder, int id, std::string& name, bool overwrite);
 
         // Deletes the file this node references, the object will not be lost
         // Returns false if the node failed to delete
@@ -51,7 +56,7 @@ class SGNode{
 
         // Delete unordered map, will write data first if there are changes
         ~SGNode();
-    public:
+    //public:
         // ID of this node
         int& getId();
 
@@ -70,13 +75,13 @@ class SGNode{
         
         // Returns the value of the key, null if key is not in map
         // if data is not loaded this method will cause data to be loaded
-        std::vector<unsigned char>& getValue(std::string key);
+        std::vector<unsigned char>& getRawData(std::string key);
         // returns the length of the value
-        int getValue(std::string key, char*& pointer);
-        void getValue(std::string key, std::string& value);
-        void getValue(std::string key, int32_t& value);
-        void getValue(std::string key, double& value);
-        void getValue(std::string key, bool& value);
+        int getByteArray(std::string key, char*& pointer);
+        std::string& getString(std::string key);
+        int32_t& getInt32(std::string key);
+        double& getDouble(std::string key);
+        bool& getBool(std::string key);
 
         // Sets the value of a key
         // if data is not loaded this method will cause data to be loaded

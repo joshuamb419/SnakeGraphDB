@@ -10,12 +10,12 @@
 
 SGNode::SGNode(std::string& folder, int id, std::string& name) : SGNode(folder, id, name, false) {}
 
-SGNode::SGNode(std::string& folder, int id, std::string& name, bool writeOnLoad){
+SGNode::SGNode(std::string& folder, int id, std::string& name, bool overwrite){
     this->id = id;
     this->name = name;
     this->filepath = folder + std::to_string(id) + FILE_EXT;
     
-    if(writeOnLoad) {
+    if(overwrite) {
         data_changed = true;
         data_loaded = true;
         node_contents = new std::unordered_map<std::string, std::vector<unsigned char>>();
@@ -101,9 +101,14 @@ void SGNode::writeData(){
     ofs << std::to_string(id) << char(A_RECORD_SEP) << name;
     ofs << char(A_GROUP_SEP);
 
-    uint32_t pos = ofs.tellp();
-
     // Group 1 Writing
+    for(std::string str : labels) {
+        ofs << str;
+
+    }
+
+    // Group 2 Writing
+    uint32_t pos = ofs.tellp();
 
     // Do nothing if there is no data
     if(node_contents->size() == 0) {
@@ -135,7 +140,7 @@ void SGNode::writeData(){
 
     ofs << char(A_GROUP_SEP);
 
-    // Group 2 writing
+    // Group 3 writing
 
     std::vector<unsigned char> value = std::vector<unsigned char>();
     while(!key_order.empty()) {
@@ -156,36 +161,37 @@ void SGNode::dumpData(){
     data_loaded = false;
 }
 
-std::vector<unsigned char>& SGNode::getValue(std::string key) {
+std::vector<unsigned char>& SGNode::getRawData(std::string key) {
     if(!data_loaded) loadData();
 
     return node_contents->at(key);
 }
 
-int SGNode::getValue(std::string key, char*& pointer) {
-    std::vector<unsigned char>& data = getValue(key);
+int SGNode::getByteArray(std::string key, char*& pointer) {
+    std::vector<unsigned char>& data = getRawData(key);
     pointer = (char *) data.data();
     return data.size();
 }
 
-void SGNode::getValue(std::string key, std::string& value) {
-    std::vector<unsigned char>& data = getValue(key);
-    value = std::string(data.begin(), data.end());
+std::string& SGNode::getString(std::string key) {
+    std::vector<unsigned char>& data = getRawData(key);
+    std::string string = std::string(data.begin(), data.end());
+    return string;
 }
 
-void SGNode::getValue(std::string key, int32_t& value) {
-    std::vector<unsigned char>& data = getValue(key);
-    value = *((int*) data.data());
+int32_t& SGNode::getInt32(std::string key) {
+    std::vector<unsigned char>& data = getRawData(key);
+    return *((int32_t*) data.data());
 }
 
-void SGNode::getValue(std::string key, double& value) {
-    std::vector<unsigned char>& data = getValue(key);
-    value = *((double*) data.data());
+double& SGNode::getDouble(std::string key) {
+    std::vector<unsigned char>& data = getRawData(key);
+    return *((double*) data.data());
 }
 
-void SGNode::getValue(std::string key, bool& value) {
-    std::vector<unsigned char>& data = getValue(key);
-    value = *((bool*) data.data());
+bool& SGNode::getBool(std::string key) {
+    std::vector<unsigned char>& data = getRawData(key);
+    return *((bool*) data.data());
 }
 
 void SGNode::setValue(std::string key, std::vector<unsigned char> value) {
