@@ -77,11 +77,11 @@ void SGNode::loadData(){
 
         node_contents->emplace(key, value);
 
-        // std::printf("\nKey: %s\nPosition: %d\nLength: %d\nValue: ", key.c_str(), pos, len);
-        // for(char d : value) {
-        //     std::cout << d;
-        // }
-        // std::cout << std::endl;
+//         std::printf("\nKey: %s\nPosition: %d\nLength: %d\nValue: ", key.c_str(), pos, len);
+//         for(char d : value) {
+//             std::cout << d;
+//         }
+//         std::cout << std::endl;
 
         ifs.get(c);
     }
@@ -102,10 +102,9 @@ void SGNode::writeData(){
     ofs << char(A_GROUP_SEP);
 
     // Group 1 Writing
-    for(std::string str : labels) {
-        ofs << str;
-
-    }
+//    for(std::string str : labels) {
+//        ofs << str;
+//    }
 
     // Group 2 Writing
     uint32_t pos = ofs.tellp();
@@ -173,10 +172,9 @@ int SGNode::getByteArray(std::string key, char*& pointer) {
     return data.size();
 }
 
-std::string& SGNode::getString(std::string key) {
+std::string SGNode::getString(std::string key) {
     std::vector<unsigned char>& data = getRawData(key);
-    std::string string = std::string(data.begin(), data.end());
-    return string;
+    return std::string(data.begin(), data.end());
 }
 
 int32_t& SGNode::getInt32(std::string key) {
@@ -194,7 +192,7 @@ bool& SGNode::getBool(std::string key) {
     return *((bool*) data.data());
 }
 
-void SGNode::setValue(std::string key, std::vector<unsigned char> value) {
+void SGNode::setRawValue(std::string key, std::vector<unsigned char> value) {
     if(!data_loaded) loadData();
 
     node_contents->erase(key);
@@ -202,32 +200,33 @@ void SGNode::setValue(std::string key, std::vector<unsigned char> value) {
     data_changed = true;
 }
 
-void SGNode::setValue(std::string key, char* pointer, int length) {
+void SGNode::setByteArray(std::string key, char* pointer, int length) {
     std::vector<unsigned char> data(pointer, pointer + length);
-    setValue(key, data);
+    setRawValue(key, data);
 }
 
-void SGNode::setValue(std::string key, std::string value) {
+void SGNode::setString(std::string key, std::string value) {
     std::vector<unsigned char> data(value.begin(), value.end());
-    setValue(key, data);
+    std::cout << value << std::endl;
+    setRawValue(key, data);
 }
 
-void SGNode::setValue(std::string key, int32_t value) {
+void SGNode::setInt32(std::string key, int32_t value) {
     unsigned char* d = reinterpret_cast<unsigned char*>(&value);
     std::vector<unsigned char> data(d, d + sizeof(value));
-    setValue(key, data);
+    setRawValue(key, data);
 }
 
-void SGNode::setValue(std::string key, double value) {
+void SGNode::setDouble(std::string key, double value) {
     unsigned char* d = reinterpret_cast<unsigned char*>(&value);
     std::vector<unsigned char> data(d, d + sizeof(value));
-    setValue(key, data);
+    setRawValue(key, data);
 }
 
-void SGNode::setValue(std::string key, bool value) {
+void SGNode::setBool(std::string key, bool value) {
     unsigned char* d = reinterpret_cast<unsigned char*>(&value);
     std::vector<unsigned char> data(d, d + sizeof(value));
-    setValue(key, data);
+    setRawValue(key, data);
 }
 
 

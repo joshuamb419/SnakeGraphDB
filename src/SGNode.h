@@ -78,19 +78,19 @@ class SGNode{
         std::vector<unsigned char>& getRawData(std::string key);
         // returns the length of the value
         int getByteArray(std::string key, char*& pointer);
-        std::string& getString(std::string key);
+        std::string getString(std::string key);
         int32_t& getInt32(std::string key);
         double& getDouble(std::string key);
         bool& getBool(std::string key);
 
         // Sets the value of a key
         // if data is not loaded this method will cause data to be loaded
-        void setValue(std::string key, std::vector<unsigned char> value);
-        void setValue(std::string key, char* pointer, int length);
-        void setValue(std::string key, std::string value);
-        void setValue(std::string key, int32_t value);
-        void setValue(std::string key, double value);
-        void setValue(std::string key, bool value);
+        void setRawValue(std::string key, std::vector<unsigned char> value);
+        void setByteArray(std::string key, char* pointer, int length);
+        void setString(std::string key, std::string value);
+        void setInt32(std::string key, int32_t value);
+        void setDouble(std::string key, double value);
+        void setBool(std::string key, bool value);
         // Erases the key and the value associated with that key
         // if data is not loaded this method will cause data to be loaded
         void eraseValue(std::string key);
