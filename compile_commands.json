@@ -1,0 +1,58 @@
+[
+ {
+  "directory": "/mnt/Common/code/SnakeGraphDB",
+  "arguments": [
+   "g++",
+   "-std=c++11",
+   "-fdiagnostics-color=always",
+   "-g",
+   "-c",
+   "-o",
+   "./target/SGNode.o",
+   "src/SGNode.cpp"
+  ],
+  "file": "src/SGNode.cpp"
+ },
+ {
+  "directory": "/mnt/Common/code/SnakeGraphDB",
+  "arguments": [
+   "g++",
+   "-std=c++11",
+   "-fdiagnostics-color=always",
+   "-g",
+   "-c",
+   "-o",
+   "./target/main.o",
+   "src/main.cpp"
+  ],
+  "file": "src/main.cpp"
+ },
+ {
+  "directory": "/mnt/Common/code/SnakeGraphDB",
+  "arguments": [
+   "g++",
+   "-std=c++11",
+   "-fdiagnostics-color=always",
+   "-g",
+   "-c",
+   "-o",
+   "./target/SnakeGraph.o",
+   "src/SnakeGraph.cpp"
+  ],
+  "file": "src/SnakeGraph.cpp"
+ },
+ {
+  "directory": "/mnt/Common/code/SnakeGraphDB",
+  "arguments": [
+   "g++",
+   "-std=c++11",
+   "-fdiagnostics-color=always",
+   "-g",
+   "-c",
+   "-o",
+   "./target/SGLinkManager.o",
+   "src/SGLinkManager.cpp"
+  ],
+  "file": "src/SGLinkManager.cpp"
+ }
+]
