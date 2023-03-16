@@ -7,3 +7,4 @@ snake_graph
 .fleet/*
 !.fleet/run.json
 *.vgcore
+compile_commands.json
