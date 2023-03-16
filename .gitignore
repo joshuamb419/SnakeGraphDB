@@ -5,4 +5,6 @@ db_folder/
 snake_graph
 .cache/
 .fleet/
+!.fleet/run.json
 compile_commands.json
+*.vgcore
