@@ -11,7 +11,7 @@ namespace SnakeGraph {
     class LinkManager {
     private:
       // Provides all links indexed by source node
-      std::multimap<int, struct SGLink*> link_map;
+      std::multimap<int, struct Link*> link_map;
     
       // Stores all destination nodes, prevents links from being valid if the
       // destination has been removed from the manager

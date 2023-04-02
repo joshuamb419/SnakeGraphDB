@@ -7,22 +7,16 @@
 
 using namespace SnakeGraph;
 
-struct SGLink {
-    Node* dest;
-    int destId;
-    std::string title;
-};
-
-inline bool operator==(const SGLink* sgl, const std::string& str) {
+inline bool operator==(const Link* sgl, const std::string& str) {
     return sgl->title == str;
 }
 
-inline bool operator!=(const SGLink* sgl, const std::string& str) {
+inline bool operator!=(const Link* sgl, const std::string& str) {
     return !(sgl == str);
 }
 
 void LinkManager::addLink(int src, Node* dest, std::string linkTitle) {
-    SGLink* link = (SGLink*) malloc(sizeof(struct SGLink));
+    Link* link = (Link*) malloc(sizeof(struct Link));
     link->dest = dest;
     link->destId = dest->getId();
     link->title = linkTitle;

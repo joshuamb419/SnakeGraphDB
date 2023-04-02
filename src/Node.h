@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 namespace SnakeGraph {
+
         class Node{
 
           /*
@@ -97,7 +98,13 @@ namespace SnakeGraph {
           void eraseValue(std::string key);
 
           friend class SnakeGraph;
-          friend class SGLinkManager;
+          friend class LinkManager;
+        };
+
+        struct Link {
+          Node* dest;
+          int destId;
+          std::string title;
         };
 }
 #endif

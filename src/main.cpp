@@ -8,6 +8,8 @@
 #include <string>
 #include "Node.h"
 
+using namespace SnakeGraph;
+
 int main(int argc, char** argv){
     std::string folder = "./db_folder/";
     std::string name = "test_muffins";
