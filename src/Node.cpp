@@ -18,9 +18,9 @@ Node::Node(std::string& folder, int id, std::string& name, bool overwrite){
     this->filepath = folder + std::to_string(id) + FILE_EXT;
     
     if(overwrite) {
-        data_changed = true;
-        data_loaded = true;
-        node_contents = new std::unordered_map<std::string, std::vector<unsigned char>>();
+        dataChanged = true;
+        dataLoaded = true;
+        nodeContents = new std::unordered_map<std::string, std::vector<unsigned char>>();
         deleteNode();
         writeData();
     }
@@ -35,20 +35,20 @@ std::string& Node::getName(){
 }
 
 bool& Node::isLoaded(){
-    return data_loaded;
+    return dataLoaded;
 }
 
 void Node::loadData(){
     // If data is already loaded, do not reload
-    if(data_loaded) return;
+    if(dataLoaded) return;
 
-    node_contents = new std::unordered_map<std::string, std::vector<unsigned char>>();
+    nodeContents = new std::unordered_map<std::string, std::vector<unsigned char>>();
 
     std::ifstream ifs(filepath, std::ios::binary);
 
     if(!ifs.is_open()) throw std::invalid_argument("Unable to open file");
 
-    data_loaded = true;
+    dataLoaded = true;
 
     char c = ' ';
     while(c != A_GROUP_SEP) { ifs.get(c); }
@@ -77,7 +77,7 @@ void Node::loadData(){
         }
         ifs.seekg(old_pos);
 
-        node_contents->emplace(key, value);
+        nodeContents->emplace(key, value);
 
 //         std::printf("\nKey: %s\nPosition: %d\nLength: %d\nValue: ", key.c_str(), pos, len);
 //         for(char d : value) {
@@ -93,9 +93,9 @@ void Node::loadData(){
 void Node::writeData(){
 
     // No need to write data if data hasn't changed
-    if(!data_changed) return;
+    if(!dataChanged) return;
     // If something has changed but the data isnt loaded we need it in memory
-    if(!data_loaded) loadData();
+    if(!dataLoaded) loadData();
 
     std::ofstream ofs(filepath, std::ios::trunc | std::ios::binary);
 
@@ -112,14 +112,14 @@ void Node::writeData(){
     uint32_t pos = ofs.tellp();
 
     // Do nothing if there is no data
-    if(node_contents->size() == 0) {
+    if(nodeContents->size() == 0) {
         ofs << char(A_GROUP_SEP);
         ofs.close();
-        data_changed = false;
+        dataChanged = false;
         return;
     }
 
-    for(auto it : *node_contents) {
+    for(auto it : *nodeContents) {
         pos += it.first.length();
         pos += 9;
     }
@@ -129,7 +129,7 @@ void Node::writeData(){
     std::queue<std::string> key_order = std::queue<std::string>();
 
     int i = 0;
-    for(auto it : *node_contents) {
+    for(auto it : *nodeContents) {
         ofs << it.first;
         ofs << char(A_UNIT_SEP);
         key_order.push(it.first);
@@ -145,27 +145,27 @@ void Node::writeData(){
 
     std::vector<unsigned char> value = std::vector<unsigned char>();
     while(!key_order.empty()) {
-        value = node_contents->at(key_order.front());
+        value = nodeContents->at(key_order.front());
         key_order.pop();
         ofs.write((char*) value.data(), value.size());
     }
 
     ofs.close();
 
-    data_changed = false;
+    dataChanged = false;
 }
 
 void Node::dumpData(){
-    if(!data_loaded) return;
+    if(!dataLoaded) return;
     writeData();
-    delete node_contents;
-    data_loaded = false;
+    delete nodeContents;
+    dataLoaded = false;
 }
 
 std::vector<unsigned char>& Node::getRawData(std::string key) {
-    if(!data_loaded) loadData();
+    if(!dataLoaded) loadData();
 
-    return node_contents->at(key);
+    return nodeContents->at(key);
 }
 
 int Node::getByteArray(std::string key, char*& pointer) {
@@ -195,11 +195,11 @@ bool& Node::getBool(std::string key) {
 }
 
 void Node::setRawValue(std::string key, std::vector<unsigned char> value) {
-    if(!data_loaded) loadData();
+    if(!dataLoaded) loadData();
 
-    node_contents->erase(key);
-    node_contents->emplace(key, value);
-    data_changed = true;
+    nodeContents->erase(key);
+    nodeContents->emplace(key, value);
+    dataChanged = true;
 }
 
 void Node::setByteArray(std::string key, char* pointer, int length) {
@@ -233,10 +233,10 @@ void Node::setBool(std::string key, bool value) {
 
 
 void Node::eraseValue(std::string key) {
-    if(!data_loaded) loadData();
+    if(!dataLoaded) loadData();
 
-    node_contents->erase(key);
-    data_changed = true;
+    nodeContents->erase(key);
+    dataChanged = true;
 }
 
 bool Node::deleteNode() {

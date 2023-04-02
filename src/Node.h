@@ -35,14 +35,14 @@ namespace SnakeGraph {
           std::string filepath;
 
           // non-control data stored in the node
-          std::unordered_map<std::string, std::vector<unsigned char>>* node_contents = NULL;
+          std::unordered_map<std::string, std::vector<unsigned char>>* nodeContents = NULL;
 
           // Labels used for querying
           std::set<std::string> labels;
 
-          bool data_loaded = false;
+          bool dataLoaded = false;
 
-          bool data_changed = false;
+          bool dataChanged = false;
 
         public:
           Node();
