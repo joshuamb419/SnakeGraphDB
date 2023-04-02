@@ -2,11 +2,13 @@
 #include <vector>
 #include <map>
 
-#include "SGLinkManager.h"
-#include "SGNode.h"
+#include "LinkManager.h"
+#include "Node.h"
+
+using namespace SnakeGraph;
 
 struct SGLink {
-    SGNode* dest;
+    Node* dest;
     int destId;
     std::string title;
 };
@@ -19,7 +21,7 @@ inline bool operator!=(const SGLink* sgl, const std::string& str) {
     return !(sgl == str);
 }
 
-void SGLinkManager::addLink(int src, SGNode* dest, std::string linkTitle) {
+void LinkManager::addLink(int src, Node* dest, std::string linkTitle) {
     SGLink* link = (SGLink*) malloc(sizeof(struct SGLink));
     link->dest = dest;
     link->destId = dest->getId();
@@ -29,11 +31,11 @@ void SGLinkManager::addLink(int src, SGNode* dest, std::string linkTitle) {
     dest_set.insert(dest->getId());
 }
 
-inline void SGLinkManager::addLink(SGNode* src, SGNode* dest, std::string linkTitle) {
+inline void LinkManager::addLink(Node* src, Node* dest, std::string linkTitle) {
     addLink(src->getId(), dest, linkTitle);
 }
 
-void SGLinkManager::removeLink(int src, SGNode* dest, std::string linkTitle) {
+void LinkManager::removeLink(int src, Node* dest, std::string linkTitle) {
     auto its = link_map.equal_range(src);
 
     for(auto linkIt = its.first; linkIt != its.second; linkIt++) {
@@ -45,11 +47,11 @@ void SGLinkManager::removeLink(int src, SGNode* dest, std::string linkTitle) {
     }
 }
 
-inline void SGLinkManager::removeLink(SGNode* src, SGNode* dest, std::string linkTitle) {
+inline void LinkManager::removeLink(Node* src, Node* dest, std::string linkTitle) {
     removeLink(src->getId(), dest, linkTitle);
 }
 
-void SGLinkManager::removeAllLinks(int nodeId) {
+void LinkManager::removeAllLinks(int nodeId) {
     auto its = link_map.equal_range(nodeId);
     for(auto linkIt = its.first; linkIt != its.second; linkIt++) {
         free(linkIt->second);
@@ -59,14 +61,14 @@ void SGLinkManager::removeAllLinks(int nodeId) {
     dest_set.erase(nodeId);
 }
 
-inline void SGLinkManager::removeAllLinks(SGNode* node) {
+inline void LinkManager::removeAllLinks(Node* node) {
     removeAllLinks(node->getId());
 }
 
-std::vector<SGNode*>& SGLinkManager::getLinks(int src) {
+std::vector<Node*>& LinkManager::getLinks(int src) {
     auto its = link_map.equal_range(src);
     
-    std::vector<SGNode*> links;
+    std::vector<Node*> links;
 
     for(auto linkIt = its.first; linkIt != its.second; linkIt++) {
         if(dest_set.count(linkIt->second->destId) == 0) {
@@ -81,14 +83,14 @@ std::vector<SGNode*>& SGLinkManager::getLinks(int src) {
     return links;
 }
 
-inline std::vector<SGNode*>& SGLinkManager::getLinks(SGNode* src) {
+inline std::vector<Node*>& LinkManager::getLinks(Node* src) {
     return getLinks(src->getId());
 }
 
-std::vector<SGNode*>& SGLinkManager::getLinks(int src, std::string linkTitle) {
+std::vector<Node*>& LinkManager::getLinks(int src, std::string linkTitle) {
     auto its = link_map.equal_range(src);
     
-    std::vector<SGNode*> links;
+    std::vector<Node*> links;
 
     for(auto linkIt = its.first; linkIt != its.second; linkIt++) {
         if(linkIt->second != linkTitle) continue;
@@ -105,11 +107,11 @@ std::vector<SGNode*>& SGLinkManager::getLinks(int src, std::string linkTitle) {
     return links;
 }
 
-inline std::vector<SGNode*>& SGLinkManager::getLinks(SGNode* src, std::string linkTitle) {
+inline std::vector<Node*>& LinkManager::getLinks(Node* src, std::string linkTitle) {
     return getLinks(src->getId(), linkTitle);
 }
 
-SGLinkManager::~SGLinkManager() {
+LinkManager::~LinkManager() {
     for(auto it = link_map.begin(); it != link_map.end(); it++) {
         free(it->second);
     }

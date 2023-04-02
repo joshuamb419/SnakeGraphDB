@@ -6,14 +6,14 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include "SGNode.h"
+#include "Node.h"
 
 int main(int argc, char** argv){
     std::string folder = "./db_folder/";
     std::string name = "test_muffins";
 
     std::printf("Writing node 1...\n");
-    SGNode *write_node = new SGNode(folder, 1, name, true);
+    Node *write_node = new Node(folder, 1, name, true);
     write_node->setInt32("Ingredient Count", 32);
     write_node->setBool("Has Gluten", true);
     write_node->setDouble("Cups of Flour", 3.75);
@@ -23,7 +23,7 @@ int main(int argc, char** argv){
     std::printf("\nNode 1 written\n");
 
     std::printf("\nReading node 1...\n\n");
-    SGNode *read_node = new SGNode(folder, 1, name);
+    Node *read_node = new Node(folder, 1, name);
     std::printf("Ingerdient Count: %d\n", read_node->getInt32("Ingredient Count"));
     std::printf("Has Gluten: %d\n", read_node->getBool("Has Gluten"));
     std::printf("Cups of Flour: %f\n", read_node->getDouble("Cups of Flour"));

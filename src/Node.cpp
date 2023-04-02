@@ -1,4 +1,4 @@
-#include "SGNode.h"
+#include "Node.h"
 #include "AsciiControlCodes.h"
 #include <string>
 #include <algorithm>
@@ -8,9 +8,11 @@
 #include <queue>
 #include <sstream>
 
-SGNode::SGNode(std::string& folder, int id, std::string& name) : SGNode(folder, id, name, false) {}
+using namespace SnakeGraph;
 
-SGNode::SGNode(std::string& folder, int id, std::string& name, bool overwrite){
+Node::Node(std::string& folder, int id, std::string& name) : Node(folder, id, name, false) {}
+
+Node::Node(std::string& folder, int id, std::string& name, bool overwrite){
     this->id = id;
     this->name = name;
     this->filepath = folder + std::to_string(id) + FILE_EXT;
@@ -24,19 +26,19 @@ SGNode::SGNode(std::string& folder, int id, std::string& name, bool overwrite){
     }
 }
 
-int& SGNode::getId(){
+int& Node::getId(){
     return id;
 }
 
-std::string& SGNode::getName(){
+std::string& Node::getName(){
     return name;
 }
 
-bool& SGNode::isLoaded(){
+bool& Node::isLoaded(){
     return data_loaded;
 }
 
-void SGNode::loadData(){
+void Node::loadData(){
     // If data is already loaded, do not reload
     if(data_loaded) return;
 
@@ -88,7 +90,7 @@ void SGNode::loadData(){
 }
 
 // Writing is based on the format found on lines 11-18 of SGNode.h
-void SGNode::writeData(){
+void Node::writeData(){
 
     // No need to write data if data hasn't changed
     if(!data_changed) return;
@@ -153,46 +155,46 @@ void SGNode::writeData(){
     data_changed = false;
 }
 
-void SGNode::dumpData(){  
+void Node::dumpData(){
     if(!data_loaded) return;
     writeData();
     delete node_contents;
     data_loaded = false;
 }
 
-std::vector<unsigned char>& SGNode::getRawData(std::string key) {
+std::vector<unsigned char>& Node::getRawData(std::string key) {
     if(!data_loaded) loadData();
 
     return node_contents->at(key);
 }
 
-int SGNode::getByteArray(std::string key, char*& pointer) {
+int Node::getByteArray(std::string key, char*& pointer) {
     std::vector<unsigned char>& data = getRawData(key);
     pointer = (char *) data.data();
     return data.size();
 }
 
-std::string SGNode::getString(std::string key) {
+std::string Node::getString(std::string key) {
     std::vector<unsigned char>& data = getRawData(key);
     return std::string(data.begin(), data.end());
 }
 
-int32_t& SGNode::getInt32(std::string key) {
+int32_t& Node::getInt32(std::string key) {
     std::vector<unsigned char>& data = getRawData(key);
     return *((int32_t*) data.data());
 }
 
-double& SGNode::getDouble(std::string key) {
+double& Node::getDouble(std::string key) {
     std::vector<unsigned char>& data = getRawData(key);
     return *((double*) data.data());
 }
 
-bool& SGNode::getBool(std::string key) {
+bool& Node::getBool(std::string key) {
     std::vector<unsigned char>& data = getRawData(key);
     return *((bool*) data.data());
 }
 
-void SGNode::setRawValue(std::string key, std::vector<unsigned char> value) {
+void Node::setRawValue(std::string key, std::vector<unsigned char> value) {
     if(!data_loaded) loadData();
 
     node_contents->erase(key);
@@ -200,47 +202,47 @@ void SGNode::setRawValue(std::string key, std::vector<unsigned char> value) {
     data_changed = true;
 }
 
-void SGNode::setByteArray(std::string key, char* pointer, int length) {
+void Node::setByteArray(std::string key, char* pointer, int length) {
     std::vector<unsigned char> data(pointer, pointer + length);
     setRawValue(key, data);
 }
 
-void SGNode::setString(std::string key, std::string value) {
+void Node::setString(std::string key, std::string value) {
     std::vector<unsigned char> data(value.begin(), value.end());
     std::cout << value << std::endl;
     setRawValue(key, data);
 }
 
-void SGNode::setInt32(std::string key, int32_t value) {
+void Node::setInt32(std::string key, int32_t value) {
     unsigned char* d = reinterpret_cast<unsigned char*>(&value);
     std::vector<unsigned char> data(d, d + sizeof(value));
     setRawValue(key, data);
 }
 
-void SGNode::setDouble(std::string key, double value) {
+void Node::setDouble(std::string key, double value) {
     unsigned char* d = reinterpret_cast<unsigned char*>(&value);
     std::vector<unsigned char> data(d, d + sizeof(value));
     setRawValue(key, data);
 }
 
-void SGNode::setBool(std::string key, bool value) {
+void Node::setBool(std::string key, bool value) {
     unsigned char* d = reinterpret_cast<unsigned char*>(&value);
     std::vector<unsigned char> data(d, d + sizeof(value));
     setRawValue(key, data);
 }
 
 
-void SGNode::eraseValue(std::string key) {
+void Node::eraseValue(std::string key) {
     if(!data_loaded) loadData();
 
     node_contents->erase(key);
     data_changed = true;
 }
 
-bool SGNode::deleteNode() {
+bool Node::deleteNode() {
     return remove(filepath.c_str()) == 0;
 }
 
-SGNode::~SGNode() {
+Node::~Node() {
     dumpData();
 }
