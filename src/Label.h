@@ -1,6 +1,9 @@
 #ifndef SG_LABEL
 #define SG_LABEL
 
+#include "LinkManager.h"
+#include "Node.h"
+#include "SnakeGraph.h"
 #include <string>
 
 namespace SnakeGraph {
@@ -16,27 +19,59 @@ namespace SnakeGraph {
  * 1: String data
  * 2: 32bit Int
  * 3: Double
+ *
+ * Label Encoding Standard:
+ * <label_type>:<label_title>:<value>
  */
 
     class Label {
         private:
-            int labelType = 0;
             std::string title;
+        protected:
+            Label(std::string title) {
+                this->title = title;
+            }
+            static Label loadLabel(std::string encodedString);
+
+            std::string getTitle();
+            std::string encodeLabel();
+
+
+        friend class StringLabel;
+        friend class IntLabel;
+        friend class DoubleLabel;
+        friend class LinkManager;
+        friend class SnakeGraph;
     };
     
     class StringLabel : Label {
         private:
             std::string value;
+        protected:
+            StringLabel(std::string encodedString);
+            StringLabel(std::string title, std::string value) : Label(title) {
+                this->value = value;
+            }
     };
     
     class IntLabel : Label {
         private:
             int32_t value;
+        protected:
+            IntLabel(std::string encodedString);
+            IntLabel(std::string title, int32_t value) : Label(title) {
+                this->value = value;
+            }
     };
     
     class DoubleLabel : Label {
         private:
             double value;
+        protected:
+            DoubleLabel(std::string encodedString);
+            DoubleLabel(std::string title, double value) : Label(title) {
+                this->value = value;
+            }
     };
 }
 
