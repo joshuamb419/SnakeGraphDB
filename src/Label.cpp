@@ -37,10 +37,10 @@ std::string IntLabel::encodeLabel() {
 }
 
 std::string DoubleLabel::encodeLabel() {
-  std::string encodedLabel = "3";
-  encodedLabel += char(A_RECORD_SEP);
-  encodedLabel += getTitle();
-  encodedLabel += char(A_RECORD_SEP);
-  encodedLabel += value;
-  return encodedLabel;
+    std::string encodedLabel = "3";
+    encodedLabel += char(A_RECORD_SEP);
+    encodedLabel += getTitle();
+    encodedLabel += char(A_RECORD_SEP);
+    encodedLabel += value;
+    return encodedLabel;
 }

@@ -3,7 +3,7 @@
 
 namespace SnakeGraph {
     class SnakeGraph {
-    private:
+        private:
 
     };
 }
