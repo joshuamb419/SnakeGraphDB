@@ -31,17 +31,15 @@ namespace SnakeGraph {
             Label(std::string title) {
                 this->title = title;
             }
-            static Label loadLabel(std::string encodedString);
 
             std::string getTitle();
-            std::string encodeLabel();
+            virtual std::string encodeLabel();
 
 
         friend class StringLabel;
         friend class IntLabel;
         friend class DoubleLabel;
-        friend class LinkManager;
-        friend class SnakeGraph;
+        friend class LabelBuilder;
     };
     
     class StringLabel : Label {
@@ -52,6 +50,9 @@ namespace SnakeGraph {
             StringLabel(std::string title, std::string value) : Label(title) {
                 this->value = value;
             }
+            std::string encodeLabel() override;
+
+        friend class LabelBuilder;
     };
     
     class IntLabel : Label {
@@ -62,6 +63,9 @@ namespace SnakeGraph {
             IntLabel(std::string title, int32_t value) : Label(title) {
                 this->value = value;
             }
+            std::string encodeLabel() override;
+
+        friend class LabelBuilder;
     };
     
     class DoubleLabel : Label {
@@ -72,6 +76,9 @@ namespace SnakeGraph {
             DoubleLabel(std::string title, double value) : Label(title) {
                 this->value = value;
             }
+            std::string encodeLabel() override;
+
+        friend class LabelBuilder;
     };
 }
 
