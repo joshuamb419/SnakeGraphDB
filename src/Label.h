@@ -28,6 +28,10 @@ namespace SnakeGraph {
         private:
             std::string title;
         protected:
+            Label() {
+                this->title = "";
+            }
+        public:
             Label(std::string title) {
                 this->title = title;
             }
@@ -42,43 +46,46 @@ namespace SnakeGraph {
         friend class LabelBuilder;
     };
     
-    class StringLabel : Label {
+    class StringLabel : public Label {
         private:
             std::string value;
         protected:
-            StringLabel(std::string encodedString);
-            StringLabel(std::string title, std::string value) : Label(title) {
-                this->value = value;
-            }
+            StringLabel(std::string& encodedString);
+        public:
+            StringLabel(std::string title, std::string value);
+            std::string& getValue();
+            void setValue(std::string value);
             std::string encodeLabel() override;
 
-        friend class LabelBuilder;
+        friend class LabelEncoder;
     };
     
-    class IntLabel : Label {
+    class IntLabel : public Label {
         private:
             int32_t value;
         protected:
-            IntLabel(std::string encodedString);
-            IntLabel(std::string title, int32_t value) : Label(title) {
-                this->value = value;
-            }
+            IntLabel(std::string& encodedString);
+        public:
+            IntLabel(std::string title, int32_t value);
+            int32_t& getValue();
+            void setValue(int32_t value);
             std::string encodeLabel() override;
 
-        friend class LabelBuilder;
+        friend class LabelEncoder;
     };
     
-    class DoubleLabel : Label {
+    class DoubleLabel : public Label {
         private:
             double value;
         protected:
-            DoubleLabel(std::string encodedString);
-            DoubleLabel(std::string title, double value) : Label(title) {
-                this->value = value;
-            }
+            DoubleLabel(std::string& encodedString);
+        public:
+            DoubleLabel(std::string title, double value);
+            double& getValue();
+            void setValue(double value);
             std::string encodeLabel() override;
 
-        friend class LabelBuilder;
+        friend class LabelEncoder;
     };
 }
 

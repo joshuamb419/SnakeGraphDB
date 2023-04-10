@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++11 -fdiagnostics-color=always -g
+CFLAGS = -std=c++20 -fdiagnostics-color=always -g
 TARGET = ./target/
 EXE_FILE = snake_graph
 DBFOLDER = ./db_folder/

@@ -1,12 +1,14 @@
 #ifndef SG_LABEL_BUILDER
 #define SG_LABEL_BUILDER
 
+#include <string>
+
 #include "Label.h"
 
 namespace SnakeGraph {
-    class LabelBuilder {
+    class LabelEncoder {
         public:
-            static Label loadLabel(std::string encodedString);
+            static Label* decodeLabel(std::string encodedString);
     };
 }
 
