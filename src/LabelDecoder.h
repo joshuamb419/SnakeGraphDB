@@ -6,7 +6,7 @@
 #include "Label.h"
 
 namespace SnakeGraph {
-    class LabelEncoder {
+    class LabelDecoder {
         public:
             static Label* decodeLabel(std::string encodedString);
     };

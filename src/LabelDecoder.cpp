@@ -1,13 +1,13 @@
 #include <stdexcept>
 #include <string>
 
-#include "LabelEncoder.h"
+#include "LabelDecoder.h"
 #include "Label.h"
 #include "AsciiControlCodes.h"
 
 using namespace SnakeGraph;
 
-Label* LabelEncoder::decodeLabel(std::string encodedString) {
+Label* LabelDecoder::decodeLabel(std::string encodedString) {
     int sepIndex = encodedString.find(A_RECORD_SEP);
     int labelType = std::atoi(encodedString.substr(sepIndex).c_str());
     encodedString.erase(0, sepIndex + 1);

@@ -43,7 +43,6 @@ namespace SnakeGraph {
         friend class StringLabel;
         friend class IntLabel;
         friend class DoubleLabel;
-        friend class LabelBuilder;
     };
     
     class StringLabel : public Label {
@@ -57,7 +56,7 @@ namespace SnakeGraph {
             void setValue(std::string value);
             std::string encodeLabel() override;
 
-        friend class LabelEncoder;
+        friend class LabelDecoder;
     };
     
     class IntLabel : public Label {
@@ -71,7 +70,7 @@ namespace SnakeGraph {
             void setValue(int32_t value);
             std::string encodeLabel() override;
 
-        friend class LabelEncoder;
+        friend class LabelDecoder;
     };
     
     class DoubleLabel : public Label {
@@ -85,7 +84,7 @@ namespace SnakeGraph {
             void setValue(double value);
             std::string encodeLabel() override;
 
-        friend class LabelEncoder;
+        friend class LabelDecoder;
     };
 }
 
