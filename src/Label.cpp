@@ -1,6 +1,8 @@
+#include <algorithm>
 #include <random>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "AsciiControlCodes.h"
 #include "Label.h"
@@ -11,19 +13,20 @@ std::string Label::getTitle() {
     return title;
 }
 
-std::string Label::encodeLabel() {
-    std::string encodedLabel = "0";
-    encodedLabel += char(A_RECORD_SEP);
-    encodedLabel += getTitle();
+std::vector<unsigned char> Label::encodeLabel() {
+    std::vector<unsigned char> encodedLabel;
+    encodedLabel.push_back(char(48));
+    encodedLabel.insert(encodedLabel.end(), title.begin(), title.end());
     return encodedLabel;
 }
 
-StringLabel::StringLabel(std::string& encodedString) {
-    int sepIndex = encodedString.find(A_RECORD_SEP);
-    title = encodedString.substr(sepIndex).c_str();
-    encodedString.erase(0, sepIndex + 1);
+StringLabel::StringLabel(std::vector<unsigned char>& encodedString) {
+    auto it = std::find(encodedString.begin(), encodedString.end(), char(A_RECORD_SEP));
+    title = std::string(encodedString.begin(), it);
+    it++;
+    encodedString.erase(encodedString.begin(), it);
 
-    value = encodedString;
+    value = std::string(encodedString.begin(), encodedString.end());
 }
 
 StringLabel::StringLabel(std::string title, std::string value) : Label(title) {
@@ -38,21 +41,22 @@ void StringLabel::setValue(std::string value) {
     this->value = value;
 }
 
-std::string StringLabel::encodeLabel() {
-    std::string encodedLabel = "1";
-    encodedLabel += char(A_RECORD_SEP);
-    encodedLabel += getTitle();
-    encodedLabel += char(A_RECORD_SEP);
-    encodedLabel += value;
+std::vector<unsigned char> StringLabel::encodeLabel() {
+    std::vector<unsigned char> encodedLabel;
+    encodedLabel.push_back(char(49));
+    encodedLabel.insert(encodedLabel.end(), title.begin(), title.end());
+    encodedLabel.push_back(char(A_RECORD_SEP));
+    encodedLabel.insert(encodedLabel.end(), value.begin(), value.end());
     return encodedLabel;
 }
 
-IntLabel::IntLabel(std::string& encodedString) {
-    int sepIndex = encodedString.find(A_RECORD_SEP);
-    title = encodedString.substr(sepIndex).c_str();
-    encodedString.erase(0, sepIndex + 1);
+IntLabel::IntLabel(std::vector<unsigned char>& encodedString) {
+    auto it = std::find(encodedString.begin(), encodedString.end(), char(A_RECORD_SEP));
+    title = std::string(encodedString.begin(), it);
+    it++;
+    encodedString.erase(encodedString.begin(), it);
 
-    value = std::atoi(encodedString.c_str());
+    value = *((int32_t*) encodedString.data());
 }
 
 IntLabel::IntLabel(std::string title, int32_t value) : Label(title) {
@@ -67,32 +71,37 @@ void IntLabel::setValue(int32_t value) {
     this->value = value;
 }
 
-std::string IntLabel::encodeLabel() {
-    std::string encodedLabel = "2";
-    encodedLabel += char(A_RECORD_SEP);
-    encodedLabel += getTitle();
-    encodedLabel += char(A_RECORD_SEP);
-    encodedLabel += value;
+std::vector<unsigned char> IntLabel::encodeLabel() {
+    std::vector<unsigned char> encodedLabel;
+    encodedLabel.push_back(char(50));
+    encodedLabel.insert(encodedLabel.end(), title.begin(), title.end());
+    encodedLabel.push_back(char(A_RECORD_SEP));
+
+    unsigned char* valuePointer = reinterpret_cast<unsigned char*>(&value);
+    encodedLabel.insert(encodedLabel.end(), valuePointer, valuePointer + sizeof(value));
     return encodedLabel;
 }
 
-DoubleLabel::DoubleLabel(std::string& encodedString) {
-    int sepIndex = encodedString.find(A_RECORD_SEP);
-    title = encodedString.substr(sepIndex).c_str();
-    encodedString.erase(0, sepIndex + 1);
+DoubleLabel::DoubleLabel(std::vector<unsigned char>& encodedString) {
+    auto it = std::find(encodedString.begin(), encodedString.end(), char(A_RECORD_SEP));
+    title = std::string(encodedString.begin(), it);
+    it++;
+    encodedString.erase(encodedString.begin(), it);
 
-    value = std::atof((encodedString.c_str()));
+    value = *((double*) encodedString.data());
 }
 
 DoubleLabel::DoubleLabel(std::string title, double value) : Label(title) {
     this->value = value;
 }
 
-std::string DoubleLabel::encodeLabel() {
-    std::string encodedLabel = "3";
-    encodedLabel += char(A_RECORD_SEP);
-    encodedLabel += getTitle();
-    encodedLabel += char(A_RECORD_SEP);
-    encodedLabel += value;
+std::vector<unsigned char> DoubleLabel::encodeLabel() {
+    std::vector<unsigned char> encodedLabel;
+    encodedLabel.push_back(char(51));
+    encodedLabel.insert(encodedLabel.end(), title.begin(), title.end());
+    encodedLabel.push_back(char(A_RECORD_SEP));
+
+    unsigned char* valuePointer = reinterpret_cast<unsigned char*>(&value);
+    encodedLabel.insert(encodedLabel.end(), valuePointer, valuePointer + sizeof(value));
     return encodedLabel;
 }

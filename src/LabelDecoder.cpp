@@ -1,5 +1,7 @@
+#include <algorithm>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "LabelDecoder.h"
 #include "Label.h"
@@ -7,14 +9,13 @@
 
 using namespace SnakeGraph;
 
-Label* LabelDecoder::decodeLabel(std::string encodedString) {
-    int sepIndex = encodedString.find(A_RECORD_SEP);
-    int labelType = std::atoi(encodedString.substr(sepIndex).c_str());
-    encodedString.erase(0, sepIndex + 1);
+Label* LabelDecoder::decodeLabel(std::vector<unsigned char> encodedString) {
+    int labelType = encodedString.at(0) - 48;
+    encodedString.erase(encodedString.begin());
 
     switch(labelType) {
         case 0:
-            return new Label(encodedString);
+            return new Label(std::string(encodedString.begin(), encodedString.end()));
             break;
         case 1:
             return new StringLabel(encodedString);

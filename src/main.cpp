@@ -11,12 +11,19 @@
 using namespace SnakeGraph;
 
 int main(int argc, char** argv){
-    Label* testLabel = new StringLabel("FavQuote", "Hello There");
-    std::string encodedLabel = testLabel->encodeLabel();
+    Label* testLabel = new IntLabel("FavQuote", 1);
+    std::vector<unsigned char> encodedLabel = testLabel->encodeLabel();
 
-    Label* decodedLabel = LabelDecoder::decodeLabel(testLabel->encodeLabel());
-    std::printf("Original: %s\nRemade: %s",
-                encodedLabel.c_str(),
-                decodedLabel->encodeLabel().c_str());
+    Label* decodedLabel = LabelDecoder::decodeLabel(encodedLabel);
+    std::printf("Original: ");
+    for(unsigned char c : encodedLabel){
+        std::printf("%c", c);
+    }
+
+    std::printf("\nRecoded: ");
+    for(unsigned char c : decodedLabel->encodeLabel()) {
+        std::printf("%c", c);
+    }
+    std::printf("\n");
     
 }

@@ -209,7 +209,6 @@ void Node::setByteArray(std::string key, char* pointer, int length) {
 
 void Node::setString(std::string key, std::string value) {
     std::vector<unsigned char> data(value.begin(), value.end());
-    std::cout << value << std::endl;
     setRawValue(key, data);
 }
 

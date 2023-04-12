@@ -37,7 +37,7 @@ namespace SnakeGraph {
             }
 
             std::string getTitle();
-            virtual std::string encodeLabel();
+            virtual std::vector<unsigned char> encodeLabel();
 
 
         friend class StringLabel;
@@ -49,12 +49,12 @@ namespace SnakeGraph {
         private:
             std::string value;
         protected:
-            StringLabel(std::string& encodedString);
+            StringLabel(std::vector<unsigned char>& encodedString);
         public:
             StringLabel(std::string title, std::string value);
             std::string& getValue();
             void setValue(std::string value);
-            std::string encodeLabel() override;
+            std::vector<unsigned char> encodeLabel() override;
 
         friend class LabelDecoder;
     };
@@ -63,12 +63,12 @@ namespace SnakeGraph {
         private:
             int32_t value;
         protected:
-            IntLabel(std::string& encodedString);
+            IntLabel(std::vector<unsigned char>& encodedString);
         public:
             IntLabel(std::string title, int32_t value);
             int32_t& getValue();
             void setValue(int32_t value);
-            std::string encodeLabel() override;
+            std::vector<unsigned char> encodeLabel() override;
 
         friend class LabelDecoder;
     };
@@ -77,12 +77,12 @@ namespace SnakeGraph {
         private:
             double value;
         protected:
-            DoubleLabel(std::string& encodedString);
+            DoubleLabel(std::vector<unsigned char>& encodedString);
         public:
             DoubleLabel(std::string title, double value);
             double& getValue();
             void setValue(double value);
-            std::string encodeLabel() override;
+            std::vector<unsigned char> encodeLabel() override;
 
         friend class LabelDecoder;
     };
