@@ -21,7 +21,7 @@ namespace SnakeGraph {
  * 3: Double
  *
  * Label Encoding Standard:
- * <label_type>:<label_title>:<value>
+ * <label_type><label_title>:<value>
  */
 
     class Label {
