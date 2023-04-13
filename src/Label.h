@@ -1,9 +1,7 @@
 #ifndef SG_LABEL
 #define SG_LABEL
 
-#include "LinkManager.h"
-#include "Node.h"
-#include "SnakeGraph.h"
+#include <vector>
 #include <string>
 
 namespace SnakeGraph {

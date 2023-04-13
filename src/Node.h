@@ -6,6 +6,8 @@
 #include <set>
 #include <unordered_map>
 
+#include "Label.h"
+
 namespace SnakeGraph {
 
     class Node{
@@ -29,7 +31,7 @@ namespace SnakeGraph {
             std::string name;
 
             // string to be appended after node id to get file name
-            std::string FILE_EXT = ".sgn";
+            constexpr static const std::string FILE_EXT = ".sgn";
 
             // path to this nodes file
             std::string filepath;
@@ -38,15 +40,24 @@ namespace SnakeGraph {
             std::unordered_map<std::string, std::vector<unsigned char>>* nodeContents = NULL;
 
             // Labels used for querying
-            std::set<std::string> labels;
+            std::set<Label*> labels;
 
             bool dataLoaded = false;
 
             bool dataChanged = false;
 
+            static bool nodeFileExists(std::string& folder, int id);
+
+            void loadName();
+
+            void loadLabels();
+
+            void writeLabels();
+
         public:
-            Node();
-            // Load SGNode
+            // Load Existing Node
+            Node(std::string& folder, int id);
+            // Create New Node
             Node(std::string& folder, int id, std::string& name);
             // Says whether or not to overwrite an existing node with the same id
             Node(std::string& folder, int id, std::string& name, bool overwrite);

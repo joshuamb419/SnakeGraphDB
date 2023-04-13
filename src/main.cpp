@@ -5,8 +5,9 @@
 #include <stdio.h>
 #include <fstream>
 #include <vector>
-#include "Label.h"
+
 #include "LabelDecoder.h"
+#include "Label.h"
 
 using namespace SnakeGraph;
 

@@ -1,5 +1,8 @@
 #include "Node.h"
 #include "AsciiControlCodes.h"
+#include "Label.h"
+#include <filesystem>
+#include <stdexcept>
 #include <string>
 #include <algorithm>
 #include <fstream>
@@ -10,20 +13,75 @@
 
 using namespace SnakeGraph;
 
+bool Node::nodeFileExists(std::string &folder, int id) {
+    std::string filepath = folder + std::to_string(id) + FILE_EXT;
+    return std::filesystem::exists(filepath);
+}
+
+Node::Node(std::string& folder, int id) {
+    // If node does not exist throw an error
+    if(!nodeFileExists(folder, id)) {
+        throw new std::invalid_argument("Node " + std::to_string(id)
+                                        + " does not exist in database \'" + folder + "\'");
+    }
+
+    this->id = id;
+    this->filepath = folder + std::to_string(id) + FILE_EXT;
+
+    loadName();
+    loadLabels();
+}
+
 Node::Node(std::string& folder, int id, std::string& name) : Node(folder, id, name, false) {}
 
 Node::Node(std::string& folder, int id, std::string& name, bool overwrite){
     this->id = id;
     this->name = name;
     this->filepath = folder + std::to_string(id) + FILE_EXT;
-    
-    if(overwrite) {
+
+    // Only write if we are supposed to be overwritting or the file does not exist
+    if(overwrite || !nodeFileExists(folder, id)) {
         dataChanged = true;
         dataLoaded = true;
         nodeContents = new std::unordered_map<std::string, std::vector<unsigned char>>();
         deleteNode();
         writeData();
+    } else {
+        throw new std::invalid_argument("Node " + std::to_string(id)
+                                        + " already exists in database \'" + folder + "\'");
     }
+}
+
+void Node::loadName() {
+    std::ifstream ifs(filepath, std::ios::binary);
+
+    // Increment ifs to start of node name
+    char c = ' ';
+    while(c != A_RECORD_SEP){ ifs.get(c); }
+
+    // Read name
+    std::vector<char> nameVector;
+    do {
+        nameVector.push_back(c);
+        ifs.get(c);
+    } while(c != A_GROUP_SEP);
+
+    ifs.close();
+
+    this->name = std::string(nameVector.begin(), nameVector.end());
+}
+
+void Node::loadLabels() {
+    std::ifstream ifs(filepath, std::ios::binary);
+
+    // Skip groups 0 and 1 (identification and labels)
+    char c = ' ';
+    while(c != A_GROUP_SEP) { ifs.get(c); }
+    ifs.get(c);
+}
+
+void Node::writeLabels() {
+    writeData();
 }
 
 int& Node::getId(){
@@ -50,9 +108,11 @@ void Node::loadData(){
 
     dataLoaded = true;
 
+    // Skip groups 0 and 1 (identification and labels)
     char c = ' ';
     while(c != A_GROUP_SEP) { ifs.get(c); }
-
+    ifs.get(c);
+    while(c != A_GROUP_SEP) { ifs.get(c); }
     ifs.get(c);
 
     while(c != char(A_GROUP_SEP)) {
@@ -104,11 +164,17 @@ void Node::writeData(){
     ofs << char(A_GROUP_SEP);
 
     // Group 1 Writing
-//    for(std::string str : labels) {
-//        ofs << str;
-//    }
+    // For every label write the encoded version of it to disk
+    for(Label* label : labels) {
+        for(unsigned char uc : label->encodeLabel()) {
+            ofs << uc;
+        }
+        ofs << char(A_UNIT_SEP);
+    }
+    ofs << char(A_GROUP_SEP);
 
     // Group 2 Writing
+    // Find position keys group begins at
     uint32_t pos = ofs.tellp();
 
     // Do nothing if there is no data
@@ -119,6 +185,7 @@ void Node::writeData(){
         return;
     }
 
+    // Figure out where group 3 will begin
     for(auto it : *nodeContents) {
         pos += it.first.length();
         pos += 9;
@@ -126,16 +193,22 @@ void Node::writeData(){
 
     pos++;
 
+    // Push keys into queue in the order they are written to ensure
+    // data is written in the same sorger
     std::queue<std::string> key_order = std::queue<std::string>();
 
     int i = 0;
     for(auto it : *nodeContents) {
+        key_order.push(it.first);
+        // Write key
         ofs << it.first;
         ofs << char(A_UNIT_SEP);
-        key_order.push(it.first);
         uint32_t size = it.second.size();
+        // Write position of data
         ofs.write((char*) (&pos), 4);
+        // Write len of data
         ofs.write((char*) (&size), 4);
+        // increment pos counter by size of data
         pos += size;
     }
 
@@ -143,7 +216,8 @@ void Node::writeData(){
 
     // Group 3 writing
 
-    std::vector<unsigned char> value = std::vector<unsigned char>();
+    // Write data in the same order as the keys so position values work as expected
+    std::vector<unsigned char> value;
     while(!key_order.empty()) {
         value = nodeContents->at(key_order.front());
         key_order.pop();

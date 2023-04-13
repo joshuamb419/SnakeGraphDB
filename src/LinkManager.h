@@ -5,6 +5,7 @@
 #include <vector>
 #include <set>
 
+#include "Label.h"
 #include "Node.h"
 
 namespace SnakeGraph {
