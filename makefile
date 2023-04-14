@@ -4,6 +4,7 @@ TARGET = ./target/
 EXE_FILE = snake_graph
 DBFOLDER = ./db_folder/
 TAR_NAME = SnakeGraphDB
+MAKEFLAGS += -j
 
 SRCEXT = cpp
 SOURCES = $(shell find ./src/ -type f -name "*.$(SRCEXT)")
