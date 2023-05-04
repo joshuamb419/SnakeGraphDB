@@ -1,5 +1,6 @@
 #include "Node.h"
 #include "AsciiControlCodes.h"
+#include "LabelDecoder.h"
 #include "Label.h"
 #include <filesystem>
 #include <stdexcept>
@@ -10,6 +11,7 @@
 #include <cstdint>
 #include <queue>
 #include <sstream>
+#include <vector>
 
 using namespace SnakeGraph;
 
@@ -78,6 +80,23 @@ void Node::loadLabels() {
     char c = ' ';
     while(c != A_GROUP_SEP) { ifs.get(c); }
     ifs.get(c);
+
+    // Iterate until through all labels
+    while(c != A_GROUP_SEP) {
+        // Collect all characters associated with this label
+        std::vector<unsigned char> encodedLabel;
+        while(c != A_UNIT_SEP) {
+            encodedLabel.push_back(c);
+            ifs.get(c);
+        }
+
+        // Decode the collected array of chars
+        labels.push_back(LabelDecoder::decodeLabel(encodedLabel));
+
+        ifs.get(c);
+    }
+
+    ifs.close();
 }
 
 void Node::writeLabels() {
@@ -149,13 +168,11 @@ void Node::loadData(){
     }
 }
 
-// Writing is based on the format found on lines 11-18 of SGNode.h
+// Writing is based on the format found on lines 15-23 of Node.h
 void Node::writeData(){
 
     // No need to write data if data hasn't changed
     if(!dataChanged) return;
-    // If something has changed but the data isnt loaded we need it in memory
-    if(!dataLoaded) loadData();
 
     std::ofstream ofs(filepath, std::ios::trunc | std::ios::binary);
 

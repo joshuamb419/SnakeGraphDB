@@ -40,7 +40,7 @@ namespace SnakeGraph {
             std::unordered_map<std::string, std::vector<unsigned char>>* nodeContents = NULL;
 
             // Labels used for querying
-            std::set<Label*> labels;
+            std::vector<Label*> labels;
 
             bool dataLoaded = false;
 
