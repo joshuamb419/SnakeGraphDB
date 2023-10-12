@@ -26,7 +26,10 @@ Label* LabelDecoder::decodeLabel(std::vector<unsigned char> encodedString) {
         case 3:
             return new DoubleLabel(encodedString);
             break;
+        case 4:
+            return new BoolLabel(encodedString);
+            break;
         default:
-            throw std::invalid_argument("Encoded Label String type invalid");
+            throw std::invalid_argument("Encoded Label type invalid");
     }
 }

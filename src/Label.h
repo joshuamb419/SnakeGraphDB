@@ -25,22 +25,32 @@ namespace SnakeGraph {
     class Label {
         private:
             std::string title;
+            int type;
         protected:
             Label() {
                 this->title = "";
+                this->type = 0;
+            }
+            Label(std::string title, int type) {
+                this->title = title;
+                this->type = type;
             }
         public:
             Label(std::string title) {
                 this->title = title;
+                this->type = 0;
             }
 
             std::string getTitle();
             virtual std::vector<unsigned char> encodeLabel();
 
+            const bool equals(const Label* label);
+            const bool equals(const Label& label);
 
         friend class StringLabel;
         friend class IntLabel;
         friend class DoubleLabel;
+        friend class BoolLabel;
     };
     
     class StringLabel : public Label {
@@ -80,6 +90,20 @@ namespace SnakeGraph {
             DoubleLabel(std::string title, double value);
             double& getValue();
             void setValue(double value);
+            std::vector<unsigned char> encodeLabel() override;
+
+        friend class LabelDecoder;
+    };
+
+    class BoolLabel: public Label {
+        private:
+            bool value;
+        protected:
+            BoolLabel(std::vector<unsigned char>& encodedString);
+        public:
+            BoolLabel(std::string title, bool value);
+            bool& getValue();
+            void setValue(bool value);
             std::vector<unsigned char> encodeLabel() override;
 
         friend class LabelDecoder;

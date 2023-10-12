@@ -12,19 +12,23 @@
 using namespace SnakeGraph;
 
 int main(int argc, char** argv){
-    Label* testLabel = new IntLabel("FavQuote", 1);
-    std::vector<unsigned char> encodedLabel = testLabel->encodeLabel();
+    Label* intLabel = new IntLabel("Label 1", 15);
+    Label* strLabel = new StringLabel("Label 2", "15");
 
-    Label* decodedLabel = LabelDecoder::decodeLabel(encodedLabel);
-    std::printf("Original: ");
-    for(unsigned char c : encodedLabel){
-        std::printf("%c", c);
-    }
+    printf("int equals string: %d\n", intLabel->equals(strLabel));
 
-    std::printf("\nRecoded: ");
-    for(unsigned char c : decodedLabel->encodeLabel()) {
-        std::printf("%c", c);
-    }
-    std::printf("\n");
+    auto intStr = intLabel->encodeLabel();
+    auto strStr = strLabel->encodeLabel();
+
+    Label* newInt = LabelDecoder::decodeLabel(intStr);
+    Label* newStr = LabelDecoder::decodeLabel(strStr);
     
+    printf("new int = old int: %d\n", intLabel->equals(newInt));
+    printf("new str = old str: %d\n", strLabel->equals(newStr));
+    printf("new int = new str: %d\n", newInt->equals(newStr));
+
+    delete intLabel;
+    delete strLabel;
+    delete newInt;
+    delete newStr;
 }
