@@ -9,14 +9,15 @@ namespace SnakeGraph {
 /*
  * Notes on the intended usages of Label:
  * - Labels are supposed to be fast access data that stays in memory for sorting between nodes
- * - Labels are not meant to be directly created or manipulated by users, this datatype should stay within the SnakeGraph library
- * - Labels can be compared to eachother, follows normal C++ conventions for comparrisons
+ * - Labels are not meant to be directly manipulated by users, this datatype should stay within the SnakeGraph library
+ * - Labels can be compared to eachother
  *
  * Label Types:
  * 0: No data
  * 1: String data
  * 2: 32bit Int
  * 3: Double
+ * 4: Bool
  *
  * Label Encoding Standard:
  * <label_type><label_title>:<value>
@@ -41,9 +42,13 @@ namespace SnakeGraph {
                 this->type = 0;
             }
 
+            // Returns the title of the Label
             std::string getTitle();
+
+            // Creates a serialized version of the label as a vector of unsigned chars, this can be passed to LabelDecoder's decodeLabel function to generate a label of the correct type
             virtual std::vector<unsigned char> encodeLabel();
 
+            // For dataless Labels compares titles, otherwise the values are compared. Labels of different types are always not equal
             const bool equals(const Label* label);
             const bool equals(const Label& label);
 
