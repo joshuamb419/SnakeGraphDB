@@ -42,6 +42,12 @@ namespace SnakeGraph {
             // Labels used for querying
             std::vector<Label*> labels;
 
+            // Get Links originating from this node
+            std::set<int> outgoingLinks;
+
+            // Get Links ending at this node
+            std::set<int> incomingLinks;
+
             bool dataLoaded = false;
 
             bool dataChanged = false;
@@ -68,12 +74,19 @@ namespace SnakeGraph {
 
             // Delete unordered map, will write data first if there are changes
             ~Node();
-            //public:
+
             // ID of this node
             int& getId();
 
             // Name of this node
             std::string& getName();
+
+            // Gets all Link ids
+            std::set<int> getAllLinks();
+            // Gets Link ids that end at this Node
+            std::set<int>& getOutgoingLinks();
+            // Gets Link ids that start at this Node
+            std::set<int>& getIncomingLinks();
 
             // Returns if the data is currently loaded
             bool& isLoaded();

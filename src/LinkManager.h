@@ -1,28 +1,24 @@
 #ifndef SG_LINK_MANAGER
 #define SG_LINK_MANAGER
 
-#include <map>
-#include <vector>
 #include <set>
+#include <vector>
 
 #include "Label.h"
 #include "Node.h"
 
 namespace SnakeGraph {
     struct Link {
-        Node* dest;
+        int id;
+        int sourceId;
         int destId;
         std::string title;
+        std::vector<Label*> labels;
     };
 
     class LinkManager {
         private:
-            // Provides all links indexed by source node
-            std::multimap<int, struct Link*> link_map;
-          
-            // Stores all destination nodes, prevents links from being valid if the
-            // destination has been removed from the manager
-            std::set<int> dest_set;
+            std::set<Link*> links;
         
         protected:
             LinkManager();

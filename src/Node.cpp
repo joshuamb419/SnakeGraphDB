@@ -111,6 +111,22 @@ std::string& Node::getName(){
     return name;
 }
 
+std::set<int> Node::getAllLinks() {
+    std::set<int> combinedSet;
+    std::set_union(outgoingLinks.begin(), outgoingLinks.end(),
+                   incomingLinks.begin(), incomingLinks.end(),
+                   std::inserter(combinedSet, combinedSet.begin()));
+    return combinedSet;
+}
+
+std::set<int>& Node::getOutgoingLinks() {
+    return outgoingLinks;
+}
+
+std::set<int> & Node::getIncomingLinks() {
+    return incomingLinks;
+}
+
 bool& Node::isLoaded(){
     return dataLoaded;
 }
